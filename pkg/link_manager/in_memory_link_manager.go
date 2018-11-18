@@ -4,8 +4,8 @@ import (
 	om "../object_model"
 	"errors"
 	"fmt"
-	"time"
 	"regexp"
+	"time"
 )
 
 const (
@@ -36,9 +36,9 @@ func (m *InMemoryLinkManager) GetLinks(request om.GetLinksRequest) (result om.Ge
 	}
 
 	// Prepare complied regexes
-	var urlRegex *regexp.Regexp;
-	var titleRegex *regexp.Regexp;
-	var descriptionRegex *regexp.Regexp;
+	var urlRegex *regexp.Regexp
+	var titleRegex *regexp.Regexp
+	var descriptionRegex *regexp.Regexp
 	if request.UrlRegex != "" {
 		urlRegex, err = regexp.Compile(request.UrlRegex)
 		if err != nil {
@@ -115,7 +115,7 @@ func (m *InMemoryLinkManager) AddLink(request om.AddLinkRequest) error {
 		Description: request.Description,
 		CreatedAt:   time.Now().UTC(),
 		UpdatedAt:   time.Now().UTC(),
-		Tags: request.Tags,
+		Tags:        request.Tags,
 	}
 
 	return nil
