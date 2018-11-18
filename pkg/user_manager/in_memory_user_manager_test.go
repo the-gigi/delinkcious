@@ -31,4 +31,3 @@ var _ = Describe("user manager tests", func() {
 		Ω(err).ShouldNot(BeNil())
 	})
 })
-

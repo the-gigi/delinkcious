@@ -1,8 +1,8 @@
 package social_graph_manager
 
 import (
-	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"errors"
+	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
 
 type Followers map[string]bool

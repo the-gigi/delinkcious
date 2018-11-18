@@ -1,8 +1,8 @@
 package user_manager
 
 import (
-	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"errors"
+	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"math/rand"
 	"strconv"
 )

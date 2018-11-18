@@ -25,3 +25,8 @@ type SocialGraphManager interface {
 	GetFollowing(username string) map[string]bool
 	GetFollowers(username string) map[string]bool
 }
+
+type LinkEvents interface {
+	OnLinkAdded(username string, links *Link)
+	OnLinkUpdated(username string, links *Link)
+}

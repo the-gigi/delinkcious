@@ -1,37 +1,21 @@
 package link_manager
 
 import (
-	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	//om "../object_model"
 	"errors"
 	"fmt"
+	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"regexp"
 	"time"
-)
-
-const (
-	PAGE_SIZE = 10
 )
 
 // User links are a map of url:TaggedLink
 type UserLinks map[string]*om.Link
 
 // Link store is a map of username:UserLinks
-type LinkStore map[string]UserLinks
+type InMemoryLinkStore map[string]UserLinks
 
-type InMemoryLinkManager struct {
-	linkStore          LinkStore
-	user               om.User
-	socialGraphManager om.SocialGraphManager
-}
-
-func (m *InMemoryLinkManager) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
-	if request.Username == "" {
-		err = errors.New("User name can't be empty")
-		return
-	}
-
-	userLinks := m.linkStore[request.Username]
+func (m *InMemoryLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
+	userLinks := (*m)[request.Username]
 	if userLinks == nil {
 		return
 	}
@@ -61,7 +45,6 @@ func (m *InMemoryLinkManager) GetLinks(request om.GetLinksRequest) (result om.Ge
 		}
 	}
 
-	// Ignore pagination in in-memory link manager, always return all matching results
 	for _, link := range userLinks {
 		// Check wach link against the regular expressions
 		if urlRegex != nil && !urlRegex.MatchString(link.Url) {
@@ -91,26 +74,29 @@ func (m *InMemoryLinkManager) GetLinks(request om.GetLinksRequest) (result om.Ge
 	return
 }
 
-func (m *InMemoryLinkManager) AddLink(request om.AddLinkRequest) error {
+func (m *InMemoryLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, err error) {
 	if request.Url == "" {
-		return errors.New("URL can't be empty")
+		err = errors.New("URL can't be empty")
+		return
 	}
 
 	if request.Username == "" {
-		return errors.New("User name can't be empty")
+		err = errors.New("User name can't be empty")
+		return
 	}
 
-	userLinks := m.linkStore[request.Username]
+	userLinks := (*m)[request.Username]
 	if userLinks == nil {
 		userLinks = UserLinks{}
 	} else {
 		if userLinks[request.Url] != nil {
 			msg := fmt.Sprintf("User %s already has a link for %s", request.Username, request.Url)
-			return errors.New(msg)
+			err = errors.New(msg)
+			return
 		}
 	}
 
-	userLinks[request.Url] = &om.Link{
+	link = &om.Link{
 		Url:         request.Url,
 		Title:       request.Title,
 		Description: request.Description,
@@ -118,26 +104,29 @@ func (m *InMemoryLinkManager) AddLink(request om.AddLinkRequest) error {
 		UpdatedAt:   time.Now().UTC(),
 		Tags:        request.Tags,
 	}
-
-	return nil
+	userLinks[request.Url] = link
+	return
 }
 
-func (m *InMemoryLinkManager) UpdateLink(request om.UpdateLinkRequest) error {
+func (m *InMemoryLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, err error) {
 	if request.Url == "" {
-		return errors.New("URL can't be empty")
+		err = errors.New("URL can't be empty")
+		return
 	}
 
 	if request.Username == "" {
-		return errors.New("User name can't be empty")
+		err = errors.New("User name can't be empty")
+		return
 	}
 
-	userLinks := m.linkStore[request.Username]
+	userLinks := (*m)[request.Username]
 	if userLinks == nil || userLinks[request.Url] == nil {
 		msg := fmt.Sprintf("User %s doesn't have a link for %s", request.Username, request.Url)
-		return errors.New(msg)
+		err = errors.New(msg)
+		return
 	}
 
-	link := userLinks[request.Url]
+	link = userLinks[request.Url]
 	if request.Title != "" {
 		link.Title = request.Title
 	}
@@ -155,10 +144,10 @@ func (m *InMemoryLinkManager) UpdateLink(request om.UpdateLinkRequest) error {
 		newTags[t] = true
 	}
 
-	return nil
+	return
 }
 
-func (m *InMemoryLinkManager) DeleteLink(username string, url string) error {
+func (m *InMemoryLinkStore) DeleteLink(username string, url string) error {
 	if url == "" {
 		return errors.New("URL can't be empty")
 	}
@@ -167,23 +156,12 @@ func (m *InMemoryLinkManager) DeleteLink(username string, url string) error {
 		return errors.New("User name can't be empty")
 	}
 
-	userLinks := m.linkStore[username]
+	userLinks := (*m)[username]
 	if userLinks == nil || userLinks[url] == nil {
 		msg := fmt.Sprintf("User %s doesn't have a link for %s", username, url)
 		return errors.New(msg)
 	}
 
-	delete(m.linkStore[username], url)
+	delete((*m)[username], url)
 	return nil
-}
-
-func NewInMemoryLinkManager(user om.User, socialGrpahManager om.SocialGraphManager) (om.LinkManager, error) {
-	if socialGrpahManager == nil {
-		return nil, errors.New("SocialGrpah manager can't be nil")
-	}
-	return &InMemoryLinkManager{
-		linkStore:          LinkStore{},
-		user:               user,
-		socialGraphManager: socialGrpahManager,
-	}, nil
 }
