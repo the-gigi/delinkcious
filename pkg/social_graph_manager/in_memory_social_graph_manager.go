@@ -1,7 +1,7 @@
 package social_graph_manager
 
 import (
-	om "../object_model"
+	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"errors"
 )
 

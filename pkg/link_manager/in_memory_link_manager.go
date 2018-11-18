@@ -1,7 +1,8 @@
 package link_manager
 
 import (
-	om "../object_model"
+	om "github.com/the-gigi/delinkcious/pkg/object_model"
+	//om "../object_model"
 	"errors"
 	"fmt"
 	"regexp"
