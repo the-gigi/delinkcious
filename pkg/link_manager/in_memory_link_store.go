@@ -109,16 +109,6 @@ func (m *InMemoryLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, e
 }
 
 func (m *InMemoryLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, err error) {
-	if request.Url == "" {
-		err = errors.New("URL can't be empty")
-		return
-	}
-
-	if request.Username == "" {
-		err = errors.New("User name can't be empty")
-		return
-	}
-
 	userLinks := (*m)[request.Username]
 	if userLinks == nil || userLinks[request.Url] == nil {
 		msg := fmt.Sprintf("User %s doesn't have a link for %s", request.Username, request.Url)
