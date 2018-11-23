@@ -6,12 +6,13 @@ import (
 	"time"
 
 	"database/sql"
-	_ "github.com/lib/pq"
 	sq "github.com/Masterminds/squirrel"
+	_ "github.com/lib/pq"
 )
 
 type DbLinkStore struct {
 	db *sql.DB
+	sb sq.StatementBuilderType
 }
 
 func NewDbLinkStore(host string, port int, username string, password string) (store *DbLinkStore, err error) {
@@ -22,6 +23,8 @@ func NewDbLinkStore(host string, port int, username string, password string) (st
 		return
 	}
 
+	sb := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+
 	err = createSchema(db)
 	if err != nil {
 		return
@@ -31,30 +34,30 @@ func NewDbLinkStore(host string, port int, username string, password string) (st
 	if err != nil {
 		return
 	}
-	store = &DbLinkStore{db}
+	store = &DbLinkStore{db, sb}
 	return
 }
 
 func createSchema(db *sql.DB) (err error) {
 	schema := `
         CREATE TABLE IF NOT EXISTS links (
-          id SERIAL PRIMARY KEY,
-		  username TEXT,
-          url TEXT UNIQUE NOT NULL,
-          title TEXT UNIQUE NOT NULL,
-		  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          description TEXT
+          id SERIAL   PRIMARY KEY,
+		  username    TEXT,
+          url TEXT    UNIQUE NOT NULL,
+          title TEXT  UNIQUE NOT NULL,
+		  description TEXT,
+		  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP          
         );
-		CREATE UNIQUE INDEX IF NOT EXISTS username_idx ON links(username);
+		CREATE UNIQUE INDEX IF NOT EXISTS links_username_idx ON links(username);
 
 
         CREATE TABLE IF NOT EXISTS tags (
           id SERIAL PRIMARY KEY,
-          link_id   INTEGER FOREIGN KEY links(id)			
-          name  TEXT,		  
+          link_id   INTEGER REFERENCES links(id) ON DELETE CASCADE,			
+          name      TEXT		  
         );
-        CREATE UNIQUE INDEX IF NOT EXISTS tag_link_name_idx ON tags(link_id, name);
+        CREATE UNIQUE INDEX IF NOT EXISTS tags_name_idx ON tags(name);
     `
 
 	_, err = db.Exec(schema)
@@ -62,10 +65,11 @@ func createSchema(db *sql.DB) (err error) {
 }
 
 func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
-	sb := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	q := sb.Select("*").From("links").Join("tags USING link_id").OrderBy("created_at")
+	q := s.sb.Select("*").From("links").Join("tags ON links.id = tags.link_id")
+	q = q.Where(sq.Eq{"username": request.Username}).OrderBy("created_at")
 	if request.StartToken != "" {
-		createdAt, err := time.Parse(time.RFC3339, request.StartToken)
+		var createdAt time.Time
+		createdAt, err = time.Parse(time.RFC3339, request.StartToken)
 		if err != nil {
 			return
 		}
@@ -78,13 +82,19 @@ func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 
 	fmt.Println(q.ToSql())
 	rows, err := q.RunWith(s.db).Query()
+	if err != nil {
+		return result, err
+	}
 
 	links := map[string]om.Link{}
 
 	var link om.Link
 	var id int
+	var tag_id int
+	var tag_name string
+	var username string
 	for rows.Next() {
-		err = rows.Scan(&id, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt)
+		err = rows.Scan(&id, &username, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt, &tag_id, &id, &tag_name)
 		if err != nil {
 			return
 		}
@@ -92,6 +102,7 @@ func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 		_, ok := links[link.Url]
 		if !ok {
 			links[link.Url] = link
+			result.Links = append(result.Links, link)
 		}
 	}
 
@@ -99,36 +110,78 @@ func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 	return
 }
 
-func (s *DbLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, err error) {
-	cmd := sq.Insert("links").Columns("username", "url", "title", "description").
-		                    Values(request.Username, request.Url, request.Title, request.Description)
+func (s *DbLinkStore) AddLink(request om.AddLinkRequest) (link om.Link, err error) {
+	link.Tags = map[string]bool{}
+	cmd := s.sb.Insert("links").Columns("username", "url", "title", "description").
+		Values(request.Username, request.Url, request.Title, request.Description)
+	fmt.Println(cmd.ToSql())
 	_, err = cmd.RunWith(s.db).Exec()
 	if err != nil {
 		return
 	}
 
-	sb := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	q := sb.Select("*").From("links").Where(sq.Eq{"url": request.Url})
+	q := s.sb.Select("*").From("links").Where(sq.Eq{"username": request.Username, "url": request.Url})
 	fmt.Println(q.ToSql())
-	var id int
-	err := q.RunWith(s.db).QueryRow().Scan(&id, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt)
+	var link_id int
+	var username string
+	row := q.RunWith(s.db).QueryRow()
+	err = row.Scan(&link_id, &username, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt)
 	if err != nil {
 		return
 	}
 
-	for _, t := range request.Tags {
-		??????
+	for t, _ := range request.Tags {
+		cmd := s.sb.Insert("tags").Columns("link_id", "name").Values(link_id, t)
+		_, err = cmd.RunWith(s.db).Exec()
+		if err != nil {
+			return
+		}
+
+		link.Tags[t] = true
 	}
-
-
 
 	return
 }
 
 func (s *DbLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, err error) {
+	q := sq.Update("links").Where(sq.Eq{"username": request.Username, "url": request.Url})
+	if request.Title != "" {
+		q = q.Set("title", request.Title)
+	}
+
+	if request.Description != "" {
+		q = q.Set("description", request.Description)
+	}
+
+	q = q.Suffix("RETURNING \"id\"")
+	_, err = q.RunWith(s.db).Exec()
+	if err != nil {
+		return
+	}
+
+	var link_id int
+	q.QueryRow().Scan(&link_id)
+
+	for t, _ := range request.RemoveTags {
+		_, err = s.sb.Delete("tags").Where(sq.Eq{"link_id": link_id, "name": t}).RunWith(s.db).Exec()
+		if err != nil {
+			return
+		}
+
+	}
+
+	for t, _ := range request.AddTags {
+		_, err = s.sb.Insert("tags").Columns("link_id", "name").Values(link_id, t).RunWith(s.db).Exec()
+		if err != nil {
+			return
+		}
+	}
+
 	return
+
 }
 
-func (s *DbLinkStore) DeleteLink(username string, url string) error {
-	return nil
+func (s *DbLinkStore) DeleteLink(username string, url string) (err error) {
+	_, err = s.sb.Delete("links").Where(sq.Eq{"username": username, "url": url}).RunWith(s.db).Exec()
+	return
 }
