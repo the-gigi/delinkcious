@@ -1,19 +1,35 @@
 package user_manager
 
 import (
+	sq "github.com/Masterminds/squirrel"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
 
-var _ = Describe("user manager tests", func() {
+var _ = Describe("user manager tests with DB ", func() {
+	var userStore *DbUserStore
 	var userManager om.UserManager
 	var err error
-	BeforeEach(func() {
-		store := NewInMemoryUserStore()
-		userManager, err = NewInMemoryUserManager(store)
+	var deleteAll = func() {
+		sq.Delete("users").RunWith(userStore.db).Exec()
+		sq.Delete("sessions").RunWith(userStore.db).Exec()
+	}
+
+	BeforeSuite(func() {
+		userStore, err = NewDbUserStore("localhost", 5432, "postgres", "postgres")
+		Ω(err).Should(BeNil())
+		userManager, err = NewInMemoryUserManager(userStore)
 		Ω(err).Should(BeNil())
 		Ω(userManager).ShouldNot(BeNil())
+	})
+
+	BeforeEach(func() {
+		deleteAll()
+	})
+
+	AfterSuite(func() {
+		deleteAll()
 	})
 
 	It("should register new user", func() {

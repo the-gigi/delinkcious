@@ -3,63 +3,35 @@ package user_manager
 import (
 	"errors"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	"math/rand"
-	"strconv"
 )
 
-type InMemoryUserManager struct {
-	registeredUsers map[string]bool
-	loggedInUsers   map[string]bool
-	sessions        map[string]string
+type UserManager struct {
+	userStore om.UserManager
 }
 
-func NewImMemoryUserManager() om.UserManager {
-	return &InMemoryUserManager{
-		registeredUsers: map[string]bool{},
-		loggedInUsers:   map[string]bool{},
-		sessions:        map[string]string{},
+func NewInMemoryUserManager(userStore om.UserManager) (userManager om.UserManager, err error) {
+	if userStore == nil {
+		return nil, errors.New("user store can't be nil")
 	}
+	return &UserManager{userStore: userStore}, nil
 }
 
-func (m *InMemoryUserManager) Register(user om.User) error {
+func (m *UserManager) Register(user om.User) error {
 	if user.Name == "" {
 		return errors.New("invalid user name")
 	}
-	if m.registeredUsers[user.Name] {
-		return errors.New("user already registered")
-	}
 
-	m.registeredUsers[user.Name] = true
-	return nil
+	return m.userStore.Register(user)
 }
 
-func (m *InMemoryUserManager) Login(username string, authToken string) (session string, err error) {
-	if !m.registeredUsers[username] {
-		return "", errors.New("user not registered")
+func (m *UserManager) Login(username string, authToken string) (session string, err error) {
+	if username == "" {
+		return "", errors.New("username can't be empty")
 	}
 
-	if m.loggedInUsers[username] {
-		return "", errors.New("user already logged in")
-	}
-
-	m.loggedInUsers[username] = true
-	session = strconv.Itoa(rand.Int())
-	m.sessions[session] = username
-
-	return
+	return m.userStore.Login(username, authToken)
 }
 
-func (m *InMemoryUserManager) Logout(username string, session string) error {
-	if !m.loggedInUsers[username] {
-		return errors.New("User is not logged in")
-	}
-
-	if m.sessions[session] != username {
-		return errors.New("Invalid session")
-	}
-
-	delete(m.sessions, session)
-	delete(m.loggedInUsers, username)
-
-	return nil
+func (m *UserManager) Logout(username string, session string) error {
+	return m.userStore.Logout(username, session)
 }
