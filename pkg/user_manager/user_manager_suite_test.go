@@ -1,4 +1,4 @@
-package user_manager_test
+package user_manager
 
 import (
 	"testing"

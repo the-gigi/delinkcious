@@ -1,4 +1,4 @@
-package link_manager
+package social_graph_manager
 
 import (
 	"testing"
