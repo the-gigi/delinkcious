@@ -35,7 +35,11 @@ func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
 		return
 	}
 
-	followers := m.socialGraphManager.GetFollowers(request.Username)
+	followers, err := m.socialGraphManager.GetFollowers(request.Username)
+	if err != nil {
+		return
+	}
+
 	for follower, _ := range followers {
 		m.eventSink.OnLinkAdded(follower, link)
 	}
@@ -53,8 +57,15 @@ func (m *LinkManager) UpdateLink(request om.UpdateLinkRequest) (err error) {
 	}
 
 	link, err := m.linkStore.UpdateLink(request)
+	if err != nil {
+		return
+	}
 
-	followers := m.socialGraphManager.GetFollowers(request.Username)
+	followers, err := m.socialGraphManager.GetFollowers(request.Username)
+	if err != nil {
+		return
+	}
+
 	for follower, _ := range followers {
 		m.eventSink.OnLinkUpdated(follower, link)
 	}

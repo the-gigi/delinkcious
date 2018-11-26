@@ -1,6 +1,7 @@
 package link_manager
 
 import (
+	"errors"
 	"fmt"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"time"
@@ -80,7 +81,6 @@ func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 		q = q.Where(sq.Eq{"tag": request.Tag})
 	}
 
-	fmt.Println(q.ToSql())
 	rows, err := q.RunWith(s.db).Query()
 	if err != nil {
 		return result, err
@@ -114,14 +114,12 @@ func (s *DbLinkStore) AddLink(request om.AddLinkRequest) (link om.Link, err erro
 	link.Tags = map[string]bool{}
 	cmd := s.sb.Insert("links").Columns("username", "url", "title", "description").
 		Values(request.Username, request.Url, request.Title, request.Description)
-	fmt.Println(cmd.ToSql())
 	_, err = cmd.RunWith(s.db).Exec()
 	if err != nil {
 		return
 	}
 
 	q := s.sb.Select("*").From("links").Where(sq.Eq{"username": request.Username, "url": request.Url})
-	fmt.Println(q.ToSql())
 	var link_id int
 	var username string
 	row := q.RunWith(s.db).QueryRow()
@@ -144,7 +142,7 @@ func (s *DbLinkStore) AddLink(request om.AddLinkRequest) (link om.Link, err erro
 }
 
 func (s *DbLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, err error) {
-	q := sq.Update("links").Where(sq.Eq{"username": request.Username, "url": request.Url})
+	q := s.sb.Update("links").Where(sq.Eq{"username": request.Username, "url": request.Url})
 	if request.Title != "" {
 		q = q.Set("title", request.Title)
 	}
@@ -154,9 +152,18 @@ func (s *DbLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, e
 	}
 
 	q = q.Suffix("RETURNING \"id\"")
-	_, err = q.RunWith(s.db).Exec()
+	res, err := q.RunWith(s.db).Exec()
 	if err != nil {
 		return
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowsAffected != 1 {
+		err = errors.New("update failed")
 	}
 
 	var link_id int
