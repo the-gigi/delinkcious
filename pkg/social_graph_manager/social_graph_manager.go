@@ -5,25 +5,6 @@ import (
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
 
-type Followers map[string]bool
-type Following map[string]bool
-
-type SocialUser struct {
-	Username  string
-	Followers Followers
-	Following Following
-}
-
-func NewSocialUser(username string) (user *SocialUser, err error) {
-	if username == "" {
-		err = errors.New("user name can't be empty")
-		return
-	}
-
-	user = &SocialUser{Username: username, Followers: Followers{}, Following: Following{}}
-	return
-}
-
 type SocialGraphManager struct {
 	store om.SocialGraphManager
 }
@@ -82,10 +63,10 @@ func (m *SocialGraphManager) KickFollower(followed string, follower string) (err
 	return nil
 }
 
-func (m *SocialGraphManager) GetFollowing(username string) map[string]bool {
+func (m *SocialGraphManager) GetFollowing(username string) (map[string]bool, error) {
 	return m.store.GetFollowing(username)
 }
 
-func (m *SocialGraphManager) GetFollowers(username string) map[string]bool {
+func (m *SocialGraphManager) GetFollowers(username string) (map[string]bool, error) {
 	return m.store.GetFollowers(username)
 }

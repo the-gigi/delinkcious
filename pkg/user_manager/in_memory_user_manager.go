@@ -9,7 +9,7 @@ type UserManager struct {
 	userStore om.UserManager
 }
 
-func NewInMemoryUserManager(userStore om.UserManager) (userManager om.UserManager, err error) {
+func NewUserManager(userStore om.UserManager) (userManager om.UserManager, err error) {
 	if userStore == nil {
 		return nil, errors.New("user store can't be nil")
 	}

@@ -11,7 +11,7 @@ var _ = Describe("user manager tests", func() {
 	var err error
 	BeforeEach(func() {
 		store := NewInMemoryUserStore()
-		userManager, err = NewInMemoryUserManager(store)
+		userManager, err = NewUserManager(store)
 		Ω(err).Should(BeNil())
 		Ω(userManager).ShouldNot(BeNil())
 	})

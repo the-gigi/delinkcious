@@ -22,8 +22,8 @@ type SocialGraphManager interface {
 
 	KickFollower(followed string, follower string) error
 
-	GetFollowing(username string) map[string]bool
-	GetFollowers(username string) map[string]bool
+	GetFollowing(username string) (map[string]bool, error)
+	GetFollowers(username string) (map[string]bool, error)
 }
 
 type LinkEvents interface {

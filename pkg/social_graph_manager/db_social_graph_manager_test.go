@@ -1,20 +1,35 @@
 package social_graph_manager
 
 import (
+	sq "github.com/Masterminds/squirrel"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
 
-var _ = Describe("in-memory social graph manager tests", func() {
+var _ = Describe("social graph manager tests with DB", func() {
+	var socialGraphStore *DbSocialGraphStore
 	var socialGraphManager om.SocialGraphManager
 	var err error
 
-	BeforeEach(func() {
-		store := NewInMemorySocialGraphStore()
-		socialGraphManager, err = NewSocialGraphManager(store)
+	var deleteAll = func() {
+		sq.Delete("social_graph").RunWith(socialGraphStore.db).Exec()
+	}
+
+	BeforeSuite(func() {
+		socialGraphStore, err = NewDbSocialGraphStore("localhost", 5432, "postgres", "postgres")
+		Ω(err).Should(BeNil())
+		socialGraphManager, err = NewSocialGraphManager(socialGraphStore)
 		Ω(err).Should(BeNil())
 		Ω(socialGraphManager).ShouldNot(BeNil())
+	})
+
+	BeforeEach(func() {
+		deleteAll()
+	})
+
+	AfterSuite(func() {
+		deleteAll()
 	})
 
 	It("should follow", func() {
@@ -67,6 +82,5 @@ var _ = Describe("in-memory social graph manager tests", func() {
 		following, err = socialGraphManager.GetFollowing("jack")
 		Ω(err).Should(BeNil())
 		Ω(following).Should(HaveLen(1))
-
 	})
 })

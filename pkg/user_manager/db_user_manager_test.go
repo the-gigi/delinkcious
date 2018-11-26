@@ -19,7 +19,7 @@ var _ = Describe("user manager tests with DB ", func() {
 	BeforeSuite(func() {
 		userStore, err = NewDbUserStore("localhost", 5432, "postgres", "postgres")
 		Ω(err).Should(BeNil())
-		userManager, err = NewInMemoryUserManager(userStore)
+		userManager, err = NewUserManager(userStore)
 		Ω(err).Should(BeNil())
 		Ω(userManager).ShouldNot(BeNil())
 	})

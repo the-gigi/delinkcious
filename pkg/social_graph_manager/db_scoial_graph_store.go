@@ -2,21 +2,19 @@ package social_graph_manager
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	_ "github.com/lib/pq"
-	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	"math/rand"
-	"strconv"
 )
 
-type DbUserStore struct {
+type DbSocialGraphStore struct {
 	db *sql.DB
 	sb sq.StatementBuilderType
 }
 
-func NewDbUserStore(host string, port int, username string, password string) (store *DbUserStore, err error) {
-	mask := "host=%s port=%d user=%s password=%s dbname=user_manager sslmode=disable"
+func NewDbSocialGraphStore(host string, port int, username string, password string) (store *DbSocialGraphStore, err error) {
+	mask := "host=%s port=%d user=%s password=%s dbname=social_graph_manager sslmode=disable"
 	dcn := fmt.Sprintf(mask, host, port, username, password)
 	db, err := sql.Open("postgres", dcn)
 	if err != nil {
@@ -34,81 +32,103 @@ func NewDbUserStore(host string, port int, username string, password string) (st
 	if err != nil {
 		return
 	}
-	store = &DbUserStore{db, sb}
+	store = &DbSocialGraphStore{db, sb}
 	return
 }
 
 func createSchema(db *sql.DB) (err error) {
 	schema := `
-        CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE IF NOT EXISTS social_graph (
           id SERIAL   PRIMARY KEY,
-		  name    TEXT NOT NULL,
-          email 	  TEXT UNIQUE NOT NULL
+		  followed    TEXT NOT NULL,
+          follower 	  TEXT UNIQUE NOT NULL
         );
-		CREATE UNIQUE INDEX IF NOT EXISTS users_name_idx ON users(name);
-
-        CREATE TABLE IF NOT EXISTS sessions (
-          id SERIAL   PRIMARY KEY,
-          user_id     INTEGER REFERENCES users(id) ON DELETE CASCADE,
-		  session     TEXT NOT NULL,
-          created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-		CREATE UNIQUE INDEX IF NOT EXISTS sessions_user_id_idx ON sessions(user_id);
-		CREATE UNIQUE INDEX IF NOT EXISTS sessions_session_idx ON sessions(session);
-
+		CREATE INDEX IF NOT EXISTS social_graph_follower_idx ON social_graph(follower);
+		CREATE INDEX IF NOT EXISTS social_graph_followed_idx ON social_graph(followed);
     `
 
 	_, err = db.Exec(schema)
 	return
 }
 
-func (s *DbUserStore) Register(user om.User) (err error) {
-	cmd := s.sb.Insert("users").Columns("name", "email").Values(user.Name, user.Email)
-	fmt.Println(cmd.ToSql())
+func (s *DbSocialGraphStore) Follow(followed string, follower string) (err error) {
+	cmd := s.sb.Insert("social_graph").Columns("followed", "follower").Values(followed, follower)
 	_, err = cmd.RunWith(s.db).Exec()
 	return
 }
 
-func (s *DbUserStore) Login(username string, authToken string) (session string, err error) {
-	q := s.sb.Select("id").From("users").Where(sq.Eq{"name": username})
-	_, err = q.RunWith(s.db).Exec()
+func (s *DbSocialGraphStore) Unfollow(followed string, follower string) (err error) {
+	cmd := s.sb.Delete("social_graph").Where(sq.Eq{"followed": followed, "follower": follower})
+	r, err := cmd.RunWith(s.db).Exec()
 	if err != nil {
 		return
 	}
 
-	var user_id int
-	q.QueryRow().Scan(&user_id)
+	rowsAffected, err := r.RowsAffected()
 	if err != nil {
 		return
 	}
 
-	session = strconv.Itoa(rand.Int())
-	cmd := s.sb.Insert("sessions").Columns("user_id", "session").Values(user_id, session)
-	fmt.Println(cmd.ToSql())
-	_, err = cmd.RunWith(s.db).Exec()
+	if rowsAffected != 1 {
+		return errors.New("unable to unfollow")
+	}
+
 	return
 }
 
-func (s *DbUserStore) Logout(username string, session string) (err error) {
-	q := s.sb.Select("id").From("users").Where(sq.Eq{"name": username})
-	_, err = q.RunWith(s.db).Exec()
+func (m *DbSocialGraphStore) AcceptFollowRequest(followed string, follower string) error {
+	// All request are accepted automatically
+	return nil
+}
+
+func (m *DbSocialGraphStore) RejectFollowRequest(followed string, follower string) error {
+	// All request are accepted automatically
+	return nil
+}
+
+func (m *DbSocialGraphStore) KickFollower(followed string, follower string) error {
+	// No kicking allowed for in-memory social graph manager
+	return nil
+}
+
+func (s *DbSocialGraphStore) GetFollowers(username string) (followers map[string]bool, err error) {
+	followers = map[string]bool{}
+	q := s.sb.Select("follower").From("social_graph").Where(sq.Eq{"followed": username})
+	rows, err := q.RunWith(s.db).Query()
 	if err != nil {
 		return
 	}
 
-	var user_id int
-	q.QueryRow().Scan(&user_id)
+	follower := ""
+	for rows.Next() {
+		err = rows.Scan(&follower)
+		if err != nil {
+			return
+		}
+
+		followers[follower] = true
+	}
+
+	return
+}
+
+func (s *DbSocialGraphStore) GetFollowing(username string) (following map[string]bool, err error) {
+	following = map[string]bool{}
+	q := s.sb.Select("followed").From("social_graph").Where(sq.Eq{"follower": username})
+	rows, err := q.RunWith(s.db).Query()
 	if err != nil {
 		return
 	}
 
-	cmd := s.sb.Delete("sessions").Where(sq.Eq{"user_id": user_id, "session": session})
-	_, err = cmd.RunWith(s.db).Exec()
-	if err != nil {
-		return
+	followed := ""
+	for rows.Next() {
+		err = rows.Scan(&followed)
+		if err != nil {
+			return
+		}
+
+		following[followed] = true
 	}
 
-	cmd = s.sb.Delete("users").Where(sq.Eq{"id": user_id})
-	_, err = cmd.RunWith(s.db).Exec()
 	return
 }
