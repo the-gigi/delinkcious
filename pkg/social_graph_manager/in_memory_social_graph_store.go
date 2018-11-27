@@ -85,20 +85,6 @@ func (m *InMemorySocialGraphStore) Unfollow(followed string, follower string) (e
 	return
 }
 
-func (m *InMemorySocialGraphStore) AcceptFollowRequest(followed string, follower string) error {
-	// All request are accepted automatically
-	return nil
-}
-
-func (m *InMemorySocialGraphStore) RejectFollowRequest(followed string, follower string) error {
-	// All request are accepted automatically
-	return nil
-}
-
-func (m *InMemorySocialGraphStore) KickFollower(followed string, follower string) error {
-	// No kicking allowed for in-memory social graph manager
-	return nil
-}
 
 func (m *InMemorySocialGraphStore) GetFollowing(username string) (map[string]bool, error) {
 	user := m.socialGraph[username]

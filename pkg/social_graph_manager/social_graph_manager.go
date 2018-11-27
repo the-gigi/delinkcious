@@ -34,35 +34,6 @@ func (m *SocialGraphManager) Unfollow(followed string, follower string) (err err
 	return m.store.Unfollow(followed, follower)
 }
 
-func (m *SocialGraphManager) AcceptFollowRequest(followed string, follower string) (err error) {
-	if followed == "" || follower == "" {
-		err = errors.New("followed and follower can't be empty")
-		return
-	}
-
-	// All request are accepted automatically
-	return nil
-}
-
-func (m *SocialGraphManager) RejectFollowRequest(followed string, follower string) (err error) {
-	if followed == "" || follower == "" {
-		err = errors.New("followed and follower can't be empty")
-		return
-	}
-
-	// All request are accepted automatically
-	return nil
-}
-
-func (m *SocialGraphManager) KickFollower(followed string, follower string) (err error) {
-	if followed == "" || follower == "" {
-		err = errors.New("followed and follower can't be empty")
-		return
-	}
-	// No kicking implemented
-	return nil
-}
-
 func (m *SocialGraphManager) GetFollowing(username string) (map[string]bool, error) {
 	return m.store.GetFollowing(username)
 }

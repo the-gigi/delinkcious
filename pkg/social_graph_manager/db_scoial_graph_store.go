@@ -76,21 +76,6 @@ func (s *DbSocialGraphStore) Unfollow(followed string, follower string) (err err
 	return
 }
 
-func (m *DbSocialGraphStore) AcceptFollowRequest(followed string, follower string) error {
-	// All request are accepted automatically
-	return nil
-}
-
-func (m *DbSocialGraphStore) RejectFollowRequest(followed string, follower string) error {
-	// All request are accepted automatically
-	return nil
-}
-
-func (m *DbSocialGraphStore) KickFollower(followed string, follower string) error {
-	// No kicking allowed for in-memory social graph manager
-	return nil
-}
-
 func (s *DbSocialGraphStore) GetFollowers(username string) (followers map[string]bool, err error) {
 	followers = map[string]bool{}
 	q := s.sb.Select("follower").From("social_graph").Where(sq.Eq{"followed": username})

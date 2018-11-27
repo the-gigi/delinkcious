@@ -17,16 +17,16 @@ type SocialGraphManager interface {
 	Follow(followed string, follower string) error
 	Unfollow(followed string, follower string) error
 
-	AcceptFollowRequest(followed string, follower string) error
-	RejectFollowRequest(followed string, follower string) error
-
-	KickFollower(followed string, follower string) error
-
 	GetFollowing(username string) (map[string]bool, error)
 	GetFollowers(username string) (map[string]bool, error)
+
+	//AcceptFollowRequest(followed string, follower string) error
+	//RejectFollowRequest(followed string, follower string) error
+	//KickFollower(followed string, follower string) error
 }
 
-type LinkEvents interface {
-	OnLinkAdded(username string, links *Link)
-	OnLinkUpdated(username string, links *Link)
+type LinkManagerEvents interface {
+	OnLinkAdded(username string, link *Link)
+	OnLinkUpdated(username string, link *Link)
+	OnLinkDeleted(username string, url string)
 }
