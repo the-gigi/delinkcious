@@ -8,7 +8,7 @@ import (
 type LinkManager struct {
 	linkStore          LinkStore
 	socialGraphManager om.SocialGraphManager
-	eventSink          om.LinkEvents
+	eventSink          om.LinkManagerEvents
 }
 
 func (m *LinkManager) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
@@ -83,6 +83,19 @@ func (m *LinkManager) DeleteLink(username string, url string) (err error) {
 	}
 
 	err = m.linkStore.DeleteLink(username, url)
+	if err != nil {
+		return
+	}
+
+	followers, err := m.socialGraphManager.GetFollowers(username)
+	if err != nil {
+		return
+	}
+
+	for follower, _ := range followers {
+		m.eventSink.OnLinkDeleted(follower, url)
+	}
+
 	return
 }
 
