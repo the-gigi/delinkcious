@@ -85,7 +85,6 @@ func (m *InMemorySocialGraphStore) Unfollow(followed string, follower string) (e
 	return
 }
 
-
 func (m *InMemorySocialGraphStore) GetFollowing(username string) (map[string]bool, error) {
 	user := m.socialGraph[username]
 	if user == nil {
