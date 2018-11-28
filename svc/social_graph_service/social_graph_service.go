@@ -1,4 +1,4 @@
-package social_graph_service
+package main
 
 import (
 	"encoding/json"

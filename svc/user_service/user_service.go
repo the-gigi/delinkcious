@@ -1,1 +1,1 @@
-package user_service
+package main

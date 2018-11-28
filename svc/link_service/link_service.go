@@ -1,1 +1,1 @@
-package link_service
+package main
