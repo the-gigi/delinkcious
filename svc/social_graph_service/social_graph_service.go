@@ -42,7 +42,6 @@ func main() {
 		encodeResponse,
 	)
 
-
 	http.Handle("/follow", followHandler)
 	http.Handle("/unfollow", unfollowHandler)
 	http.Handle("/following", getFollowingHandler)

@@ -42,7 +42,6 @@ type getFollowingRequest struct {
 type getFollowingResponse struct {
 	Following []string `json:"following"`
 	Err       string   `json:"err"`
-
 }
 
 func decodeFollowRequest(_ context.Context, r *http.Request) (interface{}, error) {
@@ -80,7 +79,6 @@ func decodeGetFollowersRequest(_ context.Context, r *http.Request) (interface{},
 	}
 	return request, nil
 }
-
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
 	return json.NewEncoder(w).Encode(response)
