@@ -39,6 +39,12 @@ type getFollowingRequest struct {
 	Username string `json:"followed"`
 }
 
+type getFollowingResponse struct {
+	Following []string `json:"following"`
+	Err       string   `json:"err"`
+
+}
+
 func decodeFollowRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request followRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -56,6 +62,25 @@ func decodeUnfollowRequest(_ context.Context, r *http.Request) (interface{}, err
 	}
 	return request, nil
 }
+
+func decodeGetFollowingRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request getFollowersRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
+func decodeGetFollowersRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request getFollowersRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
 	return json.NewEncoder(w).Encode(response)
@@ -78,6 +103,42 @@ func makeUnfollowEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 		req := request.(unfollowRequest)
 		err := svc.Unfollow(req.Followed, req.Follower)
 		res := unfollowResponse{}
+		if err != nil {
+			res.Err = err.Error()
+		}
+		return res, nil
+	}
+}
+
+func makeGetFollowingEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
+	return func(_ context.Context, request interface{}) (interface{}, error) {
+		req := request.(getFollowingRequest)
+		followingMap, err := svc.GetFollowing(req.Username)
+
+		following := []string{}
+		for f, _ := range followingMap {
+			following = append(following, f)
+		}
+
+		res := getFollowingResponse{Following: following}
+		if err != nil {
+			res.Err = err.Error()
+		}
+		return res, nil
+	}
+}
+
+func makeGetFollowersEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
+	return func(_ context.Context, request interface{}) (interface{}, error) {
+		req := request.(getFollowersRequest)
+		followersMap, err := svc.GetFollowers(req.Username)
+
+		followers := []string{}
+		for f, _ := range followersMap {
+			followers = append(followers, f)
+		}
+
+		res := getFollowersResponse{Followers: followers}
 		if err != nil {
 			res.Err = err.Error()
 		}

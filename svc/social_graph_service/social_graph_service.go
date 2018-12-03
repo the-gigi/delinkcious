@@ -30,7 +30,23 @@ func main() {
 		encodeResponse,
 	)
 
+	getFollowingHandler := httptransport.NewServer(
+		makeGetFollowingEndpoint(svc),
+		decodeGetFollowingRequest,
+		encodeResponse,
+	)
+
+	getFollowersHandler := httptransport.NewServer(
+		makeGetFollowersEndpoint(svc),
+		decodeGetFollowersRequest,
+		encodeResponse,
+	)
+
+
 	http.Handle("/follow", followHandler)
 	http.Handle("/unfollow", unfollowHandler)
+	http.Handle("/following", getFollowingHandler)
+	http.Handle("/followers", getFollowersHandler)
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
