@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-
 type link struct {
 	Url         string
 	Title       string
@@ -21,12 +20,12 @@ type link struct {
 
 func newLink(source om.Link) link {
 	return link{
-		Url: source.Url,
-		Title: source.Title,
+		Url:         source.Url,
+		Title:       source.Title,
 		Description: source.Description,
-		Tags: source.Tags,
-		CreatedAt: source.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: source.UpdatedAt.Format(time.RFC3339),
+		Tags:        source.Tags,
+		CreatedAt:   source.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   source.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

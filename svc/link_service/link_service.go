@@ -20,7 +20,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-
 	svc, err := lm.NewLinkManager(store, socialGraphClient, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -49,8 +48,7 @@ func main() {
 		decodeDeleteLinkRequest,
 		encodeResponse,
 	)
-	
-	
+
 	http.Handle("/links", getLinksHandler)
 	http.Handle("/addLink", addLinkHandler)
 	http.Handle("/updateLink", updateLinkHandler)

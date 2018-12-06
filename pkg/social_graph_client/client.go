@@ -12,7 +12,6 @@ import (
 	"strings"
 )
 
-
 func NewClient(baseURL string) (om.SocialGraphManager, error) {
 	// Quickly sanitize the instance string.
 	if !strings.HasPrefix(baseURL, "http") {
@@ -24,11 +23,11 @@ func NewClient(baseURL string) (om.SocialGraphManager, error) {
 	}
 
 	followEndpoint := httptransport.NewClient(
-			"POST",
-			copyURL(u, "/follow"),
-			encodeHTTPGenericRequest,
-		    decodeSimpleResponse,
-			nil).Endpoint()
+		"POST",
+		copyURL(u, "/follow"),
+		encodeHTTPGenericRequest,
+		decodeSimpleResponse,
+		nil).Endpoint()
 
 	unfollowEndpoint := httptransport.NewClient(
 		"POST",
@@ -51,13 +50,12 @@ func NewClient(baseURL string) (om.SocialGraphManager, error) {
 		decodeGetFollowersResponse,
 		nil).Endpoint()
 
-
 	// Returning the endpoint.Set as a service.Service relies on the
 	// endpoint.Set implementing the Service methods. That's just a simple bit
 	// of glue code.
 	return EndpointSet{
-		FollowEndpoint: followEndpoint,
-		UnfollowEndpoint: unfollowEndpoint,
+		FollowEndpoint:       followEndpoint,
+		UnfollowEndpoint:     unfollowEndpoint,
 		GetFollowingEndpoint: getFollowingEndpoint,
 		GetFollowersEndpoint: getFollowersEndpoint,
 	}, nil
@@ -68,7 +66,6 @@ func copyURL(base *url.URL, path string) *url.URL {
 	next.Path = path
 	return &next
 }
-
 
 // encodeHTTPGenericRequest is a transport/http.EncodeRequestFunc that
 // JSON-encodes any request to the request body. Primarily useful in a client.
