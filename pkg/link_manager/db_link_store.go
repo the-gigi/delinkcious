@@ -110,8 +110,10 @@ func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 	return
 }
 
-func (s *DbLinkStore) AddLink(request om.AddLinkRequest) (link om.Link, err error) {
-	link.Tags = map[string]bool{}
+func (s *DbLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, err error) {
+	link = &om.Link{
+		Tags: map[string]bool{},
+	}
 	cmd := s.sb.Insert("links").Columns("username", "url", "title", "description").
 		Values(request.Username, request.Url, request.Title, request.Description)
 	_, err = cmd.RunWith(s.db).Exec()
