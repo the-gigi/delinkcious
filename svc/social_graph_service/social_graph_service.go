@@ -47,5 +47,5 @@ func main() {
 	http.Handle("/following", getFollowingHandler)
 	http.Handle("/followers", getFollowersHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":9090", nil))
 }

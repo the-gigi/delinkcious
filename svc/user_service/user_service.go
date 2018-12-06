@@ -39,5 +39,5 @@ func main() {
 	http.Handle("/register", registerHandler)
 	http.Handle("/login", LoginHandler)
 	http.Handle("/logout", LogoutHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":7070", nil))
 }
