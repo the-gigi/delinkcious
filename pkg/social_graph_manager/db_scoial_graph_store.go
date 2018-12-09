@@ -41,7 +41,8 @@ func createSchema(db *sql.DB) (err error) {
         CREATE TABLE IF NOT EXISTS social_graph (
           id SERIAL   PRIMARY KEY,
 		  followed    TEXT NOT NULL,
-          follower 	  TEXT UNIQUE NOT NULL
+          follower 	  TEXT NOT NULL,
+		  UNIQUE (followed, follower)
         );
 		CREATE INDEX IF NOT EXISTS social_graph_follower_idx ON social_graph(follower);
 		CREATE INDEX IF NOT EXISTS social_graph_followed_idx ON social_graph(followed);

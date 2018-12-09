@@ -26,29 +26,25 @@ func NewClient(baseURL string) (om.SocialGraphManager, error) {
 		"POST",
 		copyURL(u, "/follow"),
 		encodeHTTPGenericRequest,
-		decodeSimpleResponse,
-		nil).Endpoint()
+		decodeSimpleResponse).Endpoint()
 
 	unfollowEndpoint := httptransport.NewClient(
 		"POST",
 		copyURL(u, "/unfollow"),
 		encodeHTTPGenericRequest,
-		decodeSimpleResponse,
-		nil).Endpoint()
+		decodeSimpleResponse).Endpoint()
 
 	getFollowingEndpoint := httptransport.NewClient(
 		"GET",
 		copyURL(u, "/following"),
-		encodeHTTPGenericRequest,
-		decodeGetFollowingResponse,
-		nil).Endpoint()
+		encodeGetByUsernameRequest,
+		decodeGetFollowingResponse).Endpoint()
 
 	getFollowersEndpoint := httptransport.NewClient(
 		"GET",
 		copyURL(u, "/followers"),
-		encodeHTTPGenericRequest,
-		decodeGetFollowersResponse,
-		nil).Endpoint()
+		encodeGetByUsernameRequest,
+		decodeGetFollowersResponse).Endpoint()
 
 	// Returning the endpoint.Set as a service.Service relies on the
 	// endpoint.Set implementing the Service methods. That's just a simple bit
@@ -76,4 +72,12 @@ func encodeHTTPGenericRequest(_ context.Context, r *http.Request, request interf
 	}
 	r.Body = ioutil.NopCloser(&buf)
 	return nil
+}
+
+// Extract the username from the incmoing request and add it to the path
+func encodeGetByUsernameRequest(ctx context.Context, req *http.Request, request interface{}) error {
+	r := request.(getByUserNameRequest)
+	username := url.QueryEscape(r.Username)
+	req.URL.Path += "/" + username
+	return encodeHTTPGenericRequest(ctx, req, request)
 }

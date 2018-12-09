@@ -9,7 +9,7 @@ import (
 )
 
 type SimpleResponse struct {
-	Err error
+	Err string
 }
 
 func decodeSimpleResponse(_ context.Context, r *http.Response) (interface{}, error) {
@@ -33,13 +33,17 @@ type FollowRequest struct {
 	Follower string
 }
 
-func (s EndpointSet) Follow(followed string, follower string) error {
+func (s EndpointSet) Follow(followed string, follower string) (err error) {
 	resp, err := s.FollowEndpoint(context.Background(), FollowRequest{Followed: followed, Follower: follower})
 	if err != nil {
 		return err
 	}
 	response := resp.(SimpleResponse)
-	return response.Err
+
+	if response.Err != "" {
+		err = errors.New(response.Err)
+	}
+	return
 }
 
 type UnfollowRequest struct {
@@ -47,67 +51,75 @@ type UnfollowRequest struct {
 	Follower string
 }
 
-func (s EndpointSet) Unfollow(followed string, follower string) error {
+func (s EndpointSet) Unfollow(followed string, follower string) (err error) {
 	resp, err := s.UnfollowEndpoint(context.Background(), UnfollowRequest{Followed: followed, Follower: follower})
 	if err != nil {
 		return err
 	}
 	response := resp.(SimpleResponse)
-	return response.Err
+	if response.Err != "" {
+		err = errors.New(response.Err)
+	}
+	return
 }
 
-type GetFollowingRequest struct {
+// Used by GetFollowing and GetFollowers endpoints
+type getByUserNameRequest struct {
 	Username string
 }
 
-type GetFollowingResponse struct {
+type getFollowingResponse struct {
 	Following map[string]bool
-	Err       error
+	Err       string
 }
 
 func decodeGetFollowingResponse(_ context.Context, r *http.Response) (interface{}, error) {
 	if r.StatusCode != http.StatusOK {
 		return nil, errors.New(r.Status)
 	}
-	var resp GetFollowingResponse
+	var resp getFollowingResponse
 	err := json.NewDecoder(r.Body).Decode(&resp)
 	return resp, err
 }
 
 func (s EndpointSet) GetFollowing(username string) (following map[string]bool, err error) {
-	resp, err := s.GetFollowingEndpoint(context.Background(), GetFollowingRequest{Username: username})
+	resp, err := s.GetFollowingEndpoint(context.Background(), getByUserNameRequest{Username: username})
 	if err != nil {
 		return
 	}
 
-	response := resp.(GetFollowingResponse)
-	return response.Following, response.Err
-}
-
-type GetFollowersRequest struct {
-	Username string
+	response := resp.(getFollowingResponse)
+	if response.Err != "" {
+		err = errors.New(response.Err)
+	}
+	following = response.Following
+	return
 }
 
 type GetFollowersResponse struct {
-	Following map[string]bool
-	Err       error
+	Followers map[string]bool
+	Err       string
 }
 
 func decodeGetFollowersResponse(_ context.Context, r *http.Response) (interface{}, error) {
 	if r.StatusCode != http.StatusOK {
 		return nil, errors.New(r.Status)
 	}
-	var resp GetFollowingResponse
+	var resp GetFollowersResponse
 	err := json.NewDecoder(r.Body).Decode(&resp)
 	return resp, err
 }
 
 func (s EndpointSet) GetFollowers(username string) (following map[string]bool, err error) {
-	resp, err := s.GetFollowersEndpoint(context.Background(), GetFollowersRequest{Username: username})
+	resp, err := s.GetFollowersEndpoint(context.Background(), getByUserNameRequest{Username: username})
 	if err != nil {
 		return
 	}
 
-	response := resp.(GetFollowingResponse)
-	return response.Following, response.Err
+	response := resp.(GetFollowersResponse)
+	if response.Err != "" {
+		err = errors.New(response.Err)
+	}
+	following = response.Followers
+	return
 }
