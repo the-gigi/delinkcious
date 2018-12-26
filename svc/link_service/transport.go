@@ -34,10 +34,6 @@ type getLinksResponse struct {
 	Err   string `json:"err"`
 }
 
-type addLinkRequest struct {
-	om.AddLinkRequest
-}
-
 type deleteLinkRequest struct {
 	Username string
 	Url      string
