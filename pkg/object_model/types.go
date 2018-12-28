@@ -46,18 +46,3 @@ type User struct {
 	Email string
 	Name  string
 }
-
-type GetTagsRequest struct {
-	Username   string
-	StartToken string
-}
-
-type GetTagsResult struct {
-	Tags          []string
-	NextPageToken string
-}
-
-type PendingFollowRequest struct {
-	Username  string
-	CreatedAt time.Time
-}

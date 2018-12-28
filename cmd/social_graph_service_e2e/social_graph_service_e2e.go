@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/the-gigi/delinkcious/pkg/social_graph_client"
 	"log"
+	"os"
 	"os/exec"
 )
 
@@ -15,7 +17,7 @@ func check(err error) {
 	}
 }
 
-func main() {
+func runDB() {
 	// Launch the DB if not running
 	out, err := exec.Command("docker", "ps", "-f", "name=postgres", "--format", "{{.Names}}").CombinedOutput()
 	check(err)
@@ -38,9 +40,32 @@ func main() {
 
 	_, err = db.Exec("DELETE from social_graph")
 	check(err)
+}
 
-	// Launch the server
-	//go exec.Command("./social_graph_service").CombinedOutput()
+func runServer(ctx context.Context) {
+	// Build the server if needed
+	_, err := os.Stat("./social_graph_service")
+	if os.IsNotExist(err) {
+		out, err := exec.Command("go", "build", ".").CombinedOutput()
+		log.Println(out)
+		check(err)
+	}
+
+	cmd := exec.CommandContext(ctx, "./social_graph_service")
+	err = cmd.Start()
+	check(err)
+}
+
+func killServer(ctx context.Context) {
+	ctx.Done()
+}
+
+func main() {
+	runDB()
+
+	ctx := context.Background()
+	defer killServer(ctx)
+	runServer(ctx)
 
 	// Run some tests with the client
 	cli, err := social_graph_client.NewClient("localhost:9090")
@@ -70,5 +95,4 @@ func main() {
 	followers, err = cli.GetFollowers("gigi")
 	check(err)
 	log.Print("gigi is followed by:", followers)
-
 }

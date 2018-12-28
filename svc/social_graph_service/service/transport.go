@@ -1,26 +1,16 @@
-package main
+package service
 
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"github.com/go-kit/kit/endpoint"
-	httptransport "github.com/go-kit/kit/transport/http"
-	"github.com/gorilla/mux"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	sgm "github.com/the-gigi/delinkcious/pkg/social_graph_manager"
-	"log"
 	"net/http"
 )
 
-var (
-	// return when an expected path variable is missing.
-	BadRoutingError = errors.New("inconsistent mapping between route and handler")
-)
-
 type followRequest struct {
-	Followed string
-	Follower string
+	Followed string `json:"followed"`
+	Follower string `json:"follower"`
 }
 
 type followResponse struct {
@@ -36,17 +26,13 @@ type unfollowResponse struct {
 	Err string `json:"err"`
 }
 
-type getFollowersRequest struct {
-	Username string `json:"followed"`
+type getByUsernameRequest struct {
+	Username string `json:"username"`
 }
 
 type getFollowersResponse struct {
 	Followers map[string]bool `json:"followers"`
 	Err       string          `json:"err"`
-}
-
-type getFollowingRequest struct {
-	Username string `json:"followed"`
 }
 
 type getFollowingResponse struct {
@@ -72,24 +58,22 @@ func decodeUnfollowRequest(_ context.Context, r *http.Request) (interface{}, err
 	return request, nil
 }
 
-// Extract the username from the request variables in the path
-func getUsername(r *http.Request) (username string, err error) {
-	vars := mux.Vars(r)
-	username, ok := vars["username"]
-	if !ok {
-		err = BadRoutingError
+func decodeGetFollowingRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request getByUsernameRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		return nil, err
 	}
-	return
-}
-
-func decodeGetFollowingRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	username, err := getUsername(r)
-	return getFollowingRequest{Username: username}, err
+	return request, nil
 }
 
 func decodeGetFollowersRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	username, err := getUsername(r)
-	return getFollowersRequest{Username: username}, err
+	var request getByUsernameRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		return nil, err
+	}
+	return request, nil
 }
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
@@ -122,7 +106,7 @@ func makeUnfollowEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 
 func makeGetFollowingEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
-		req := request.(getFollowingRequest)
+		req := request.(getByUsernameRequest)
 		followingMap, err := svc.GetFollowing(req.Username)
 		res := getFollowingResponse{Following: followingMap}
 		if err != nil {
@@ -134,7 +118,7 @@ func makeGetFollowingEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 
 func makeGetFollowersEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
-		req := request.(getFollowersRequest)
+		req := request.(getByUsernameRequest)
 		followersMap, err := svc.GetFollowers(req.Username)
 		res := getFollowersResponse{Followers: followersMap}
 		if err != nil {
@@ -142,47 +126,4 @@ func makeGetFollowersEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 		}
 		return res, nil
 	}
-}
-
-func main() {
-	store, err := sgm.NewDbSocialGraphStore("localhost", 5432, "postgres", "postgres")
-	if err != nil {
-		log.Fatal(err)
-	}
-	svc, err := sgm.NewSocialGraphManager(store)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	followHandler := httptransport.NewServer(
-		makeFollowEndpoint(svc),
-		decodeFollowRequest,
-		encodeResponse,
-	)
-
-	unfollowHandler := httptransport.NewServer(
-		makeUnfollowEndpoint(svc),
-		decodeUnfollowRequest,
-		encodeResponse,
-	)
-
-	getFollowingHandler := httptransport.NewServer(
-		makeGetFollowingEndpoint(svc),
-		decodeGetFollowingRequest,
-		encodeResponse,
-	)
-
-	getFollowersHandler := httptransport.NewServer(
-		makeGetFollowersEndpoint(svc),
-		decodeGetFollowersRequest,
-		encodeResponse,
-	)
-
-	r := mux.NewRouter()
-	r.Methods("POST").Path("/follow").Handler(followHandler)
-	r.Methods("POST").Path("/unfollow").Handler(unfollowHandler)
-	r.Methods("GET").Path("/following/{username}").Handler(getFollowingHandler)
-	r.Methods("GET").Path("/followers/{username}").Handler(getFollowersHandler)
-
-	log.Fatal(http.ListenAndServe(":9090", r))
 }
