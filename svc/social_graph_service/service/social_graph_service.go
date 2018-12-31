@@ -1,17 +1,11 @@
 package service
 
 import (
-	"errors"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	sgm "github.com/the-gigi/delinkcious/pkg/social_graph_manager"
 	"log"
 	"net/http"
-)
-
-var (
-	// return when an expected path variable is missing.
-	BadRoutingError = errors.New("inconsistent mapping between route and handler")
 )
 
 func Run() {
