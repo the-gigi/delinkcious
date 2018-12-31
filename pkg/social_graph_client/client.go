@@ -46,8 +46,8 @@ func NewClient(baseURL string) (om.SocialGraphManager, error) {
 		encodeGetByUsernameRequest,
 		decodeGetFollowersResponse).Endpoint()
 
-	// Returning the endpoint.Set as a service.Service relies on the
-	// endpoint.Set implementing the Service methods. That's just a simple bit
+	// Returning the EndpointSet as an interface relies on the
+	// EndpointSet implementing the Service methods. That's just a simple bit
 	// of glue code.
 	return EndpointSet{
 		FollowEndpoint:       followEndpoint,
