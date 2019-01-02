@@ -1,6 +1,7 @@
-package main
+package service
 
 import (
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 
@@ -9,7 +10,7 @@ import (
 	sgm "github.com/the-gigi/delinkcious/pkg/social_graph_client"
 )
 
-func main() {
+func Run() {
 	store, err := lm.NewDbLinkStore("localhost", 5432, "postgres", "postgres")
 	if err != nil {
 		log.Fatal(err)
@@ -49,10 +50,12 @@ func main() {
 		encodeResponse,
 	)
 
-	http.Handle("/links", getLinksHandler)
-	http.Handle("/addLink", addLinkHandler)
-	http.Handle("/updateLink", updateLinkHandler)
-	http.Handle("/deleteLink", deleteLinkHandler)
+	r := mux.NewRouter()
+	r.Methods("GET").Path("/links").Handler(getLinksHandler)
+	r.Methods("POST").Path("/links").Handler(addLinkHandler)
+	r.Methods("PUT").Path("/links").Handler(updateLinkHandler)
+	r.Methods("DELETE").Path("/links").Handler(deleteLinkHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Listening on port 8080...")
+	log.Fatal(http.ListenAndServe(":8080", r))
 }

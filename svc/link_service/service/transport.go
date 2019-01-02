@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"context"
@@ -45,10 +45,13 @@ type SimpleResponse struct {
 
 func decodeGetLinksRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request om.GetLinksRequest
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		return nil, err
-	}
+	q := r.URL.Query()
+	request.UrlRegex = q.Get("url")
+	request.TitleRegex = q.Get("title")
+	request.DescriptionRegex = q.Get("description")
+	request.Username = q.Get("username")
+	request.Tag = q.Get("tag")
+	request.StartToken = q.Get("start")
 	return request, nil
 }
 
@@ -72,10 +75,9 @@ func decodeUpdateLinkRequest(_ context.Context, r *http.Request) (interface{}, e
 
 func decodeDeleteLinkRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request deleteLinkRequest
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		return nil, err
-	}
+	q := r.URL.Query()
+	request.Username = q.Get("username")
+	request.Url = q.Get("url")
 	return request, nil
 }
 

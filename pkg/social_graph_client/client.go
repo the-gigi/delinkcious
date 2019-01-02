@@ -74,10 +74,10 @@ func encodeHTTPGenericRequest(_ context.Context, r *http.Request, request interf
 	return nil
 }
 
-// Extract the username from the incmoing request and add it to the path
+// Extract the username from the incoming request and add it to the path
 func encodeGetByUsernameRequest(ctx context.Context, req *http.Request, request interface{}) error {
 	r := request.(getByUserNameRequest)
-	username := url.QueryEscape(r.Username)
+	username := url.PathEscape(r.Username)
 	req.URL.Path += "/" + username
 	return encodeHTTPGenericRequest(ctx, req, request)
 }

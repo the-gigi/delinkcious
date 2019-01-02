@@ -40,8 +40,10 @@ func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
 		return
 	}
 
-	for follower, _ := range followers {
-		m.eventSink.OnLinkAdded(follower, link)
+	if m.eventSink != nil {
+		for follower, _ := range followers {
+			m.eventSink.OnLinkAdded(follower, link)
+		}
 	}
 
 	return
@@ -66,8 +68,10 @@ func (m *LinkManager) UpdateLink(request om.UpdateLinkRequest) (err error) {
 		return
 	}
 
-	for follower, _ := range followers {
-		m.eventSink.OnLinkUpdated(follower, link)
+	if m.eventSink != nil {
+		for follower, _ := range followers {
+			m.eventSink.OnLinkUpdated(follower, link)
+		}
 	}
 
 	return
@@ -92,30 +96,28 @@ func (m *LinkManager) DeleteLink(username string, url string) (err error) {
 		return
 	}
 
-	for follower, _ := range followers {
-		m.eventSink.OnLinkDeleted(follower, url)
+	if m.eventSink != nil {
+		for follower, _ := range followers {
+			m.eventSink.OnLinkDeleted(follower, url)
+		}
 	}
-
 	return
 }
 
 func NewLinkManager(linkStore LinkStore,
-	socialGrpahManager om.SocialGraphManager,
-	eventSink om.LinkEvents) (om.LinkManager, error) {
+	socialGraphManager om.SocialGraphManager,
+	eventSink om.LinkManagerEvents) (om.LinkManager, error) {
 	if linkStore == nil {
 		return nil, errors.New("link store")
 	}
 
-	if socialGrpahManager == nil {
+	if socialGraphManager == nil {
 		return nil, errors.New("social graph manager can't be nil")
-	}
-
-	if eventSink == nil {
-		return nil, errors.New("event sink can't be nil")
 	}
 
 	return &LinkManager{
 		linkStore:          linkStore,
-		socialGraphManager: socialGrpahManager,
+		socialGraphManager: socialGraphManager,
+		eventSink:          eventSink,
 	}, nil
 }
