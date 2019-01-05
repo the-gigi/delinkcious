@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: social-graph-db
+  labels:
+    svc: social-graph
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: social-graph
+      app: postgres
+  template:
+    metadata:
+      labels:
+        svc: social-graph
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:11.1-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: social_graph_manager
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: social-graph-db
+spec:
+  ports:
+  - port: 5432
+  selector:
+    svc: social-graph
+    app: postgres
