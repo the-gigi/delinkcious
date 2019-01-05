@@ -77,7 +77,7 @@ func (s *DbUserStore) Login(username string, authToken string) (session string, 
 	}
 
 	var user_id int
-	q.QueryRow().Scan(&user_id)
+	err = q.RunWith(s.db).QueryRow().Scan(&user_id)
 	if err != nil {
 		return
 	}

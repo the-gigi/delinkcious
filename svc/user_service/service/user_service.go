@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"log"
@@ -8,7 +8,7 @@ import (
 	sgm "github.com/the-gigi/delinkcious/pkg/user_manager"
 )
 
-func main() {
+func Run() {
 	store, err := sgm.NewDbUserStore("localhost", 5432, "postgres", "postgres")
 	if err != nil {
 		log.Fatal(err)
@@ -39,5 +39,7 @@ func main() {
 	http.Handle("/register", registerHandler)
 	http.Handle("/login", LoginHandler)
 	http.Handle("/logout", LogoutHandler)
+
+	log.Println("Listening on port 7070...")
 	log.Fatal(http.ListenAndServe(":7070", nil))
 }
