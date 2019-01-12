@@ -17,6 +17,43 @@ func check(err error) {
 	}
 }
 
+
+type dbParams struct {
+	Host string
+	Port int
+	User string
+	Password string
+	DbName string
+}
+
+func defaultDbParams() dbParams {
+	return dbParams{
+		Host: "localhost",
+		Port: 5432,
+		User: "postgres",
+		Password: "postgres",
+	}
+}
+
+func initDb(params dbParams) {
+	// Connect to target database
+	mask := "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable"
+	dcn := fmt.Sprintf(mask, params.Host, params.Port, params.User, params.Password, params.DbName)
+
+	db, err := sql.Open("postgres", dcn)
+	if err != nil {
+		return
+	}
+
+	// Ignore is table doesn't exist (will be created by service)
+	_, err = db.Exec("DELETE from social_graph")
+	if err != nil {
+		if err.Error() != "pq: relation \"social_graph\" does not exist" {
+			check(err)
+		}
+	}
+}
+
 func runDB() {
 	// Launch the DB if not running
 	out, err := exec.Command("docker", "ps", "-f", "name=postgres", "--format", "{{.Names}}").CombinedOutput()
@@ -26,20 +63,21 @@ func runDB() {
 	log.Print(s)
 
 	if s == "" {
-		_, err := exec.Command("docker", "restart", "postgres").CombinedOutput()
+		out, err = exec.Command("docker", "restart", "postgres").CombinedOutput()
+		if err != nil {
+			log.Print(string(out))
+			_, err = exec.Command("docker", "run", "-d", "--name", "postgres",
+				                        "-p", "5432:5432",
+				                        "-e", "POSTGRES_PASSWORD=postgres",
+				                        "postgres:alpine").CombinedOutput()
+
+		}
 		check(err)
 	}
 
-	// Clear the DB
-	mask := "host=%s port=%d user=%s password=%s dbname=social_graph_manager sslmode=disable"
-	dcn := fmt.Sprintf(mask, "localhost", 5432, "postgres", "postgres")
-	db, err := sql.Open("postgres", dcn)
-	if err != nil {
-		return
-	}
-
-	_, err = db.Exec("DELETE from social_graph")
-	check(err)
+	params := defaultDbParams()
+	params.DbName = "social_graph_manager"
+	initDb(params)
 }
 
 func runServer(ctx context.Context) {
