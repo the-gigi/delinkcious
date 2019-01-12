@@ -5,7 +5,7 @@ The social graph microservice. It uses a multi-stage Dockerfile to generate a le
 ## Build Docker image
 
 ```
-docker build . -t the_g1g1/delinkcious-social-graph:0.1
+docker build . -t g1g1/delinkcious-social-graph:0.1
 ```
 
 ## Run the social grasph locally

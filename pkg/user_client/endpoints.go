@@ -29,7 +29,7 @@ type EndpointSet struct {
 }
 
 type registerRequest struct {
-	Email string
+	Email    string
 	Username string
 }
 
@@ -48,13 +48,13 @@ func (s EndpointSet) Register(user om.User) (err error) {
 }
 
 type loginRequest struct {
-	Username string
+	Username  string
 	AuthToken string
 }
 
 type loginResponse struct {
 	Session string
-	Err string
+	Err     string
 }
 
 func decodeLoginResponse(_ context.Context, r *http.Response) (interface{}, error) {
@@ -65,7 +65,6 @@ func decodeLoginResponse(_ context.Context, r *http.Response) (interface{}, erro
 	err := json.NewDecoder(r.Body).Decode(&resp)
 	return resp, err
 }
-
 
 func (s EndpointSet) Login(username string, authToken string) (session string, err error) {
 	resp, err := s.LoginEndpoint(context.Background(),

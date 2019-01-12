@@ -1,0 +1,13 @@
+FROM golang:1.11
+ADD ./main.go main.go
+# Fetch dependencies
+RUN go get -d -v
+
+ADD ./service ./src/github.com/the-gigi/delinkcious/svc/social_graph_service/service
+
+# Build image as a truly static Go binary
+RUN go build -o /app/social_graph_service .
+
+EXPOSE 9090
+#ENTRYPOINT ["/app/social_graph_service"]
+CMD ["/app/social_graph_service"]

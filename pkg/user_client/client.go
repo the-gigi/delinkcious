@@ -44,9 +44,9 @@ func NewClient(baseURL string) (om.UserManager, error) {
 	// EndpointSet implementing the Service methods. That's just a simple bit
 	// of glue code.
 	return EndpointSet{
-		RegisterEndpoint:  registerEndpoint,
-		LoginEndpoint:     loginEndpoint,
-		LogoutEndpoint: logoutEndpoint,
+		RegisterEndpoint: registerEndpoint,
+		LoginEndpoint:    loginEndpoint,
+		LogoutEndpoint:   logoutEndpoint,
 	}, nil
 }
 
