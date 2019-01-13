@@ -5,6 +5,7 @@ import (
 	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	_ "github.com/lib/pq"
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"math/rand"
 	"strconv"
@@ -15,10 +16,10 @@ type DbUserStore struct {
 	sb sq.StatementBuilderType
 }
 
+const dbName = "user_manager"
+
 func NewDbUserStore(host string, port int, username string, password string) (store *DbUserStore, err error) {
-	mask := "host=%s port=%d user=%s password=%s dbname=user_manager sslmode=disable"
-	dcn := fmt.Sprintf(mask, host, port, username, password)
-	db, err := sql.Open("postgres", dcn)
+	db, err := db_util.EnsureDB(host, port, username, password, dbName)
 	if err != nil {
 		return
 	}

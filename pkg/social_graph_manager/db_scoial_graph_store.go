@@ -3,9 +3,9 @@ package social_graph_manager
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	_ "github.com/lib/pq"
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 )
 
 type DbSocialGraphStore struct {
@@ -15,44 +15,9 @@ type DbSocialGraphStore struct {
 
 const dbName = "social_graph_manager"
 
-func connectToDb(host string, port int, username string, password string, databaseName string) (db *sql.DB, err error) {
-	mask := "host=%s port=%d user=%s password=%s dbname=%s sslmode=disable"
-	dcn := fmt.Sprintf(mask, host, port, username, password, databaseName)
-	db, err = sql.Open("postgres", dcn)
-	return
-}
-
-// Make sure the database exists (creates it if it doesn't)
-func ensureDB(host string, port int, username string, password string) (err error) {
-	db, err := connectToDb(host, port, username, password, "postgres")
-	if err != nil {
-		return
-	}
-
-	var count int
-	sb := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
-	q := sb.Select("count(*)").From("pg_database").Where(sq.Eq{"datname": dbName})
-	err = q.RunWith(db).QueryRow().Scan(&count)
-	if err != nil {
-		return
-	}
-
-	if count == 0 {
-		_, err = db.Exec("CREATE database social_graph_manager")
-		if err != nil {
-			return
-		}
-	}
-	return
-}
 
 func NewDbSocialGraphStore(host string, port int, username string, password string) (store *DbSocialGraphStore, err error) {
-	err = ensureDB(host, port, username, password)
-	if err != nil {
-		return
-	}
-
-	db, err := connectToDb(host, port, username, password, dbName)
+	db, err := db_util.EnsureDB(host, port, username, password, dbName)
 	if err != nil {
 		return
 	}

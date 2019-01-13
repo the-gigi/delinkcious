@@ -2,7 +2,7 @@ package link_manager
 
 import (
 	"errors"
-	"fmt"
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"time"
 
@@ -16,10 +16,10 @@ type DbLinkStore struct {
 	sb sq.StatementBuilderType
 }
 
+const dbName = "link_manager"
+
 func NewDbLinkStore(host string, port int, username string, password string) (store *DbLinkStore, err error) {
-	mask := "host=%s port=%d user=%s password=%s dbname=link_manager sslmode=disable"
-	dcn := fmt.Sprintf(mask, host, port, username, password)
-	db, err := sql.Open("postgres", dcn)
+	db, err := db_util.EnsureDB(host, port, username, password, dbName)
 	if err != nil {
 		return
 	}
