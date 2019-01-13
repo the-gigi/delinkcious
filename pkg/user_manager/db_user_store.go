@@ -65,7 +65,6 @@ func createSchema(db *sql.DB) (err error) {
 
 func (s *DbUserStore) Register(user om.User) (err error) {
 	cmd := s.sb.Insert("users").Columns("name", "email").Values(user.Name, user.Email)
-	fmt.Println(cmd.ToSql())
 	_, err = cmd.RunWith(s.db).Exec()
 	return
 }
@@ -85,7 +84,6 @@ func (s *DbUserStore) Login(username string, authToken string) (session string, 
 
 	session = strconv.Itoa(rand.Int())
 	cmd := s.sb.Insert("sessions").Columns("user_id", "session").Values(user_id, session)
-	fmt.Println(cmd.ToSql())
 	_, err = cmd.RunWith(s.db).Exec()
 	return
 }
