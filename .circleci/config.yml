@@ -11,6 +11,8 @@ jobs:
     - checkout
     - run: echo "Getting all dependencies..."
     - run: go get -v ./...
+    - run: echo "Test social graph manager..."
+    - run: go test -v github.com/the-gigi/delinkcious/pkg/social_graph_manager
     - run: echo "Done."
 
 
