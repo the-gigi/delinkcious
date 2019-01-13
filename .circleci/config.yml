@@ -13,9 +13,9 @@ jobs:
     - run: go get -v ./...
     - run: go get -u github.com/onsi/ginkgo/ginkgo
     - run: go get -u github.com/onsi/gomega/...
-    - run: echo "Test social graph manager..."
-    - run: go test -v github.com/the-gigi/delinkcious/pkg/social_graph_manager
-    - run: echo "Done."
+    - run: echo "Test everything..."
+    - run: ginkgo -r
+
 
 
 
