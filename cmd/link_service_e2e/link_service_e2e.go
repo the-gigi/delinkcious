@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 	"github.com/the-gigi/delinkcious/pkg/link_manager_client"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"log"
@@ -18,32 +17,15 @@ func check(err error) {
 	}
 }
 
-func runDB() {
-	// Launch the DB if not running
-	out, err := exec.Command("docker", "ps", "-f", "name=postgres", "--format", "{{.Names}}").CombinedOutput()
+func initDB() {
+	db, err := db_util.RunLocalDB("link_manager")
 	check(err)
 
-	s := string(out)
-	log.Print(s)
-
-	if s == "" {
-		_, err := exec.Command("docker", "restart", "postgres").CombinedOutput()
+	tables := []string{"tags", "links"}
+	for _, table := range tables {
+		err = db_util.DeleteFromTableIfExist(db, table)
 		check(err)
 	}
-
-	// Clear the DB
-	mask := "host=%s port=%d user=%s password=%s dbname=link_manager sslmode=disable"
-	dcn := fmt.Sprintf(mask, "localhost", 5432, "postgres", "postgres")
-	db, err := sql.Open("postgres", dcn)
-	if err != nil {
-		return
-	}
-
-	_, err = db.Exec("DELETE from tags")
-	check(err)
-
-	_, err = db.Exec("DELETE from links")
-	check(err)
 }
 
 // Build and run a service in a target directory
@@ -79,12 +61,12 @@ func killServer(ctx context.Context) {
 }
 
 func main() {
-	runDB()
+	initDB()
 
-	//ctx := context.Background()
-	//defer killServer(ctx)
-	//runSocialGraphService(ctx)
-	//runLinkService(ctx)
+	ctx := context.Background()
+	defer killServer(ctx)
+	runSocialGraphService(ctx)
+	runLinkService(ctx)
 
 	// Run some tests with the client
 	cli, err := link_manager_client.NewClient("localhost:8080")

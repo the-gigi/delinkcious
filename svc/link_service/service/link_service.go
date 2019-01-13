@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 	"log"
 	"net/http"
 
@@ -11,7 +12,12 @@ import (
 )
 
 func Run() {
-	store, err := lm.NewDbLinkStore("localhost", 5432, "postgres", "postgres")
+	dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	store, err := lm.NewDbLinkStore(dbHost, dbPort, "postgres", "postgres")
 	if err != nil {
 		log.Fatal(err)
 	}

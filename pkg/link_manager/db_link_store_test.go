@@ -4,7 +4,9 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
+	"log"
 )
 
 var _ = Describe("DB link store tests", func() {
@@ -15,7 +17,14 @@ var _ = Describe("DB link store tests", func() {
 	}
 	BeforeSuite(func() {
 		var err error
-		linkStore, err = NewDbLinkStore("localhost", 5432, "postgres", "postgres")
+		dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
+		Ω(err).Should(BeNil())
+
+		linkStore, err = NewDbLinkStore(dbHost, dbPort, "postgres", "postgres")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		Ω(err).Should(BeNil())
 		Ω(linkStore).ShouldNot(BeNil())
 	})

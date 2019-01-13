@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 	"log"
 	"net/http"
 
@@ -9,10 +10,16 @@ import (
 )
 
 func Run() {
-	store, err := sgm.NewDbUserStore("localhost", 5432, "postgres", "postgres")
+	dbHost, dbPort, err := db_util.GetDbEndpoint("user")
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	store, err := sgm.NewDbUserStore(dbHost, dbPort, "postgres", "postgres")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	svc, err := sgm.NewUserManager(store)
 	if err != nil {
 		log.Fatal(err)

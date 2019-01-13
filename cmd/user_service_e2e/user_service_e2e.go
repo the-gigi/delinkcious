@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"github.com/the-gigi/delinkcious/pkg/user_client"
 	"log"
@@ -18,31 +17,17 @@ func check(err error) {
 	}
 }
 
-func runDB() {
-	// Launch the DB if not running
-	out, err := exec.Command("docker", "ps", "-f", "name=postgres", "--format", "{{.Names}}").CombinedOutput()
-	check(err)
-
-	s := string(out)
-	log.Print(s)
-
-	if s == "" {
-		_, err := exec.Command("docker", "restart", "postgres").CombinedOutput()
-		check(err)
-	}
-
-	// Clear the DB
-	mask := "host=%s port=%d user=%s password=%s dbname=user_manager sslmode=disable"
-	dcn := fmt.Sprintf(mask, "localhost", 5432, "postgres", "postgres")
-	db, err := sql.Open("postgres", dcn)
+func initDB() {
+	db, err := db_util.RunLocalDB("user_manager")
 	if err != nil {
 		return
 	}
 
-	_, err = db.Exec("DELETE from sessions")
-	check(err)
-	_, err = db.Exec("DELETE from users")
-	check(err)
+	tables := []string{"sessions", "users"}
+	for _, table := range tables {
+		err = db_util.DeleteFromTableIfExist(db, table)
+		check(err)
+	}
 }
 
 func runServer(ctx context.Context) {
@@ -64,7 +49,7 @@ func killServer(ctx context.Context) {
 }
 
 func main() {
-	runDB()
+	initDB()
 
 	ctx := context.Background()
 	defer killServer(ctx)
