@@ -17,20 +17,19 @@ func check(err error) {
 	}
 }
 
-
 type dbParams struct {
-	Host string
-	Port int
-	User string
+	Host     string
+	Port     int
+	User     string
 	Password string
-	DbName string
+	DbName   string
 }
 
 func defaultDbParams() dbParams {
 	return dbParams{
-		Host: "localhost",
-		Port: 5432,
-		User: "postgres",
+		Host:     "localhost",
+		Port:     5432,
+		User:     "postgres",
 		Password: "postgres",
 	}
 }
@@ -67,9 +66,9 @@ func runDB() {
 		if err != nil {
 			log.Print(string(out))
 			_, err = exec.Command("docker", "run", "-d", "--name", "postgres",
-				                        "-p", "5432:5432",
-				                        "-e", "POSTGRES_PASSWORD=postgres",
-				                        "postgres:alpine").CombinedOutput()
+				"-p", "5432:5432",
+				"-e", "POSTGRES_PASSWORD=postgres",
+				"postgres:alpine").CombinedOutput()
 
 		}
 		check(err)
