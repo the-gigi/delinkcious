@@ -14,7 +14,7 @@ jobs:
     - run: go get -u github.com/onsi/ginkgo/ginkgo
     - run: go get -u github.com/onsi/gomega/...
     - run: echo "Test everything..."
-    - run: ginkgo -r
+    - run: ginkgo -r -race -failFast -progress
 
 
 
