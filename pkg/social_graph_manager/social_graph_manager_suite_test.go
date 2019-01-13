@@ -9,5 +9,5 @@ import (
 
 func TestLinkManager(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "LinkManager Suite")
+	RunSpecs(t, "SocialGraphManager Suite")
 }
