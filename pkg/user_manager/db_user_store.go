@@ -2,7 +2,6 @@ package user_manager
 
 import (
 	"database/sql"
-	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	_ "github.com/lib/pq"
 	"github.com/the-gigi/delinkcious/pkg/db_util"
