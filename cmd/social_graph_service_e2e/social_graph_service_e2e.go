@@ -43,7 +43,6 @@ func initDB() {
 	check(err)
 }
 
-
 func main() {
 	initDB()
 
