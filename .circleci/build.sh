@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exo pipefail
+set -eo pipefail
 
 IMAGE_PREFIX='g1g1'
 STABLE_TAG='0.1'

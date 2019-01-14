@@ -24,8 +24,8 @@ jobs:
         name: build and push Docker images
         shell: /bin/bash
         command: |
-          chmod +x ./build.sh
-          ./build.sh
+          chmod +x ./circleci/build.sh
+          ./circleci/build.sh
 
 
 
