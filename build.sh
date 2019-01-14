@@ -1,7 +1,9 @@
-#!/bin/bash -eo pipefail
+#!/bin/bash -eox pipefail
 
-readonly IMAGE_PREFIX='g1g1'
-readonly STABLE_TAG='0.1'
+echo "Yeah, it works!"
+
+IMAGE_PREFIX='g1g1'
+STABLE_TAG='0.1'
 
 TAG="${STABLE_TAG}.${CIRCLE_BUILD_NUM}"
 ROOT_DIR="$(pwd)"
