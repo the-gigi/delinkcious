@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# set -eox pipefail
+set -exo pipefail
 
 echo "Yeah, it works!"
 
