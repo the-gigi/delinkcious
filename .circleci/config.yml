@@ -22,7 +22,10 @@ jobs:
         docker_layer_caching: true
     - run:
         name: build and push Docker images
-        command: ./.circleci/build.sh
+        shell: /bin/bash
+        command: |
+          chmod +x ./build.sh
+          ./build.sh
 
 
 
