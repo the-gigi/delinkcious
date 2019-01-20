@@ -1,12 +1,12 @@
-# Social Graph Service
+# User Service
 
-The social graph microservice. It uses a multi-stage [Dockerfile](Dockerfile) to generate a lean and mean image from SCRATCH that just includes the Go binary. The system has a CI/CD pipeline, but you also
+The user microservice. It uses a multi-stage [Dockerfile](Dockerfile) to generate a lean and mean image from SCRATCH that just includes the Go binary. The system has a CI/CD pipeline, but you also
 
 
 ## Build Docker image
 
 ```
-$ docker build . -t g1g1/delinkcious-social-graph:${VERSION}
+$ docker build . -t g1g1/delinkcious-user-manager:${VERSION}
 ```
 
 ## Push to Registry
@@ -20,7 +20,7 @@ $ docker login
 Then push your image:
 
 ```
-$ docker push g1g1/delinkcious-social-graph:${VERSION}
+$ docker push g1g1/delinkcious-user-manager:${VERSION}
 ```
 
 ## Deploy to active Kubernetes cluster
