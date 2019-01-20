@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: link-db
+  labels:
+    svc: link
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: link
+      app: postgres
+  template:
+    metadata:
+      labels:
+        svc: link
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:11.1-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: link_manager
+        - name: POSTGRES_link
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: link-db
+spec:
+  ports:
+  - port: 5432
+  selector:
+    svc: link
+    app: postgres
