@@ -19,6 +19,9 @@ func (m *LinkManager) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 	}
 
 	result, err = m.linkStore.GetLinks(request)
+	if result.Links == nil {
+		result.Links = []om.Link{}
+	}
 	return
 }
 

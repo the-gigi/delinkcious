@@ -11,6 +11,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const pageSize = 10
+
 type DbLinkStore struct {
 	db *sql.DB
 	sb sq.StatementBuilderType
@@ -66,8 +68,11 @@ func createSchema(db *sql.DB) (err error) {
 }
 
 func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
-	q := s.sb.Select("*").From("links").Join("tags ON links.id = tags.link_id")
-	q = q.Where(sq.Eq{"username": request.Username}).OrderBy("created_at")
+	q := s.sb.Select("*").From("links")
+	if request.Tag != "" {
+		q = q.Join("tags ON links.id = tags.link_id")
+	}
+	q = q.Where(sq.Eq{"username": request.Username}).OrderBy("created_at").Limit(pageSize)
 	if request.StartToken != "" {
 		var createdAt time.Time
 		createdAt, err = time.Parse(time.RFC3339, request.StartToken)
@@ -94,7 +99,11 @@ func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 	var tag_name string
 	var username string
 	for rows.Next() {
-		err = rows.Scan(&id, &username, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt, &tag_id, &id, &tag_name)
+		if request.Tag != "" {
+			err = rows.Scan(&id, &username, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt, &tag_id, &id, &tag_name)
+		} else {
+			err = rows.Scan(&id, &username, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt)
+		}
 		if err != nil {
 			return
 		}
@@ -106,7 +115,9 @@ func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 		}
 	}
 
-	result.NextPageToken = link.CreatedAt.UTC().Format(time.RFC3339)
+	if len(result.Links) == pageSize {
+		result.NextPageToken = link.CreatedAt.UTC().Format(time.RFC3339)
+	}
 	return
 }
 

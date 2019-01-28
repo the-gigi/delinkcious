@@ -30,7 +30,7 @@ func initDB() {
 
 // Build and run a service in a target directory
 func runService(ctx context.Context, targetDir string, service string) {
-	// Save and restore lsater current working dir
+	// Save and restore later current working dir
 	wd, err := os.Getwd()
 	check(err)
 	defer os.Chdir(wd)
@@ -49,6 +49,10 @@ func runService(ctx context.Context, targetDir string, service string) {
 }
 
 func runLinkService(ctx context.Context) {
+	// Set environment
+	err := os.Setenv("MAX_LINKS_PER_USER", "10")
+	check(err)
+
 	runService(ctx, ".", "link_service")
 }
 
