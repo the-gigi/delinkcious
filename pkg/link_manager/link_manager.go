@@ -22,7 +22,6 @@ func (m *LinkManager) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 	return
 }
 
-
 // Very wasteful way to count links
 func (m *LinkManager) getLinkCount(username string) (linkCount int64, err error) {
 	req := om.GetLinksRequest{Username: username}
@@ -138,9 +137,9 @@ func (m *LinkManager) DeleteLink(username string, url string) (err error) {
 }
 
 func NewLinkManager(linkStore LinkStore,
-	                socialGraphManager om.SocialGraphManager,
-					eventSink om.LinkManagerEvents,
-					maxLinksPerUser int64) (om.LinkManager, error) {
+	socialGraphManager om.SocialGraphManager,
+	eventSink om.LinkManagerEvents,
+	maxLinksPerUser int64) (om.LinkManager, error) {
 	if linkStore == nil {
 		return nil, errors.New("link store")
 	}
