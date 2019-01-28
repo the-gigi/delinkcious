@@ -17,12 +17,20 @@ var _ = Describe("DB link store tests", func() {
 	}
 	BeforeSuite(func() {
 		var err error
-		dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
+		dbHost, dbPort, err := db_util.GetDbEndpoint("link_manager")
 		Ω(err).Should(BeNil())
 
 		linkStore, err = NewDbLinkStore(dbHost, dbPort, "postgres", "postgres")
 		if err != nil {
-			log.Fatal(err)
+			_, err = db_util.RunLocalDB("postgres")
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			linkStore, err = NewDbLinkStore(dbHost, dbPort, "postgres", "postgres")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		Ω(err).Should(BeNil())
