@@ -5,6 +5,8 @@ import (
 	"github.com/the-gigi/delinkcious/pkg/db_util"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	httptransport "github.com/go-kit/kit/transport/http"
 	lm "github.com/the-gigi/delinkcious/pkg/link_manager"
@@ -27,7 +29,11 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	svc, err := lm.NewLinkManager(store, socialGraphClient, nil)
+	maxLinksPerUser, err := strconv.ParseInt(os.Getenv("MAX_LINKS_PER_USER"), 10, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	svc, err := lm.NewLinkManager(store, socialGraphClient, nil, maxLinksPerUser)
 	if err != nil {
 		log.Fatal(err)
 	}
