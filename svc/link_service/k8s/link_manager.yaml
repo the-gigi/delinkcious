@@ -21,7 +21,10 @@ spec:
       - name: link-manager
         image: g1g1/delinkcious-link:0.2
         ports:
-        - containerPort: 8080
+        - containerPort: $(PORT)
+      envFrom:
+      - configMapRef:
+          name: link-manager-config
 ---
 apiVersion: v1
 kind: Service
