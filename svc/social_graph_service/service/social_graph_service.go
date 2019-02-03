@@ -23,14 +23,19 @@ func Run() {
 		dbHost = "localhost"
 	}
 
-	port := os.Getenv("SOCIAL_GRAPH_DB_SERVICE_PORT")
-	if port == "" {
-		port = "5432"
+	dbPortStr := os.Getenv("SOCIAL_GRAPH_DB_SERVICE_PORT")
+	if dbPortStr == "" {
+		dbPortStr = "5432"
 	}
 
-	log.Println("DB host:", dbHost, "DB port:", port)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9090"
+	}
 
-	dbPort, err := strconv.Atoi(port)
+	log.Println("DB host:", dbHost, "DB port:", dbPortStr)
+
+	dbPort, err := strconv.Atoi(dbPortStr)
 	check(err)
 
 	store, err := sgm.NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
@@ -69,6 +74,6 @@ func Run() {
 	r.Methods("GET").Path("/following/{username}").Handler(getFollowingHandler)
 	r.Methods("GET").Path("/followers/{username}").Handler(getFollowersHandler)
 
-	log.Println("Listening on port 9090...")
-	log.Fatal(http.ListenAndServe(":9090", r))
+	log.Printf("Listening on port %s...\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
