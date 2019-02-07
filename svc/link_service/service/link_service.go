@@ -34,7 +34,7 @@ func Run() {
 		sgPort = "9090"
 	}
 
-	port := os.Getenv("SOCIAL_GRAPH_SERVICE_PORT")
+	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}

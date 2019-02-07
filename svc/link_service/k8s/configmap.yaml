@@ -5,4 +5,4 @@ metadata:
   namespace: default
 data:
   MAX_LINKS_PER_USER: "10"
-  PORT: "9090"
+  PORT: "8080"
