@@ -61,6 +61,9 @@ func runLinkService(ctx context.Context) {
 }
 
 func runSocialGraphService(ctx context.Context) {
+	err := os.Setenv("PORT", "9090")
+	check(err)
+
 	runService(ctx, "../social_graph_service", "social_graph_service")
 }
 
