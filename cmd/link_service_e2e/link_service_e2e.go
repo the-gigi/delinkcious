@@ -36,6 +36,7 @@ func runService(ctx context.Context, targetDir string, service string) {
 	defer os.Chdir(wd)
 
 	// Build the server if needed
+	os.Chdir(targetDir)
 	_, err = os.Stat("./" + service)
 	if os.IsNotExist(err) {
 		out, err := exec.Command("go", "build", ".").CombinedOutput()
@@ -50,14 +51,17 @@ func runService(ctx context.Context, targetDir string, service string) {
 
 func runLinkService(ctx context.Context) {
 	// Set environment
-	err := os.Setenv("MAX_LINKS_PER_USER", "10")
+	err := os.Setenv("PORT", "8080")
+	check(err)
+
+	err = os.Setenv("MAX_LINKS_PER_USER", "10")
 	check(err)
 
 	runService(ctx, ".", "link_service")
 }
 
 func runSocialGraphService(ctx context.Context) {
-	runService(ctx, "../social_graph_service", "link_service")
+	runService(ctx, "../social_graph_service", "social_graph_service")
 }
 
 func killServer(ctx context.Context) {

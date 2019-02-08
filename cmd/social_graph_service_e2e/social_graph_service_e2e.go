@@ -16,7 +16,7 @@ func check(err error) {
 	}
 }
 
-func runServer(ctx context.Context) {
+func runService(ctx context.Context) {
 	// Build the server if needed
 	_, err := os.Stat("./social_graph_service")
 	if os.IsNotExist(err) {
@@ -48,7 +48,7 @@ func main() {
 
 	ctx := context.Background()
 	defer killServer(ctx)
-	runServer(ctx)
+	runService(ctx)
 
 	// Run some tests with the client
 	cli, err := social_graph_client.NewClient("localhost:9090")

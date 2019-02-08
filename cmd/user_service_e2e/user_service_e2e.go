@@ -30,7 +30,7 @@ func initDB() {
 	}
 }
 
-func runServer(ctx context.Context) {
+func runService(ctx context.Context) {
 	// Build the server if needed
 	_, err := os.Stat("./user_service")
 	if os.IsNotExist(err) {
@@ -53,7 +53,7 @@ func main() {
 
 	ctx := context.Background()
 	defer killServer(ctx)
-	runServer(ctx)
+	runService(ctx)
 
 	// Run some tests with the client
 	cli, err := user_client.NewClient("localhost:7070")
