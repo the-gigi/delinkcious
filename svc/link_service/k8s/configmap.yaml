@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: link-service-config
+  name: link-manager-config
   namespace: default
 data:
   MAX_LINKS_PER_USER: "10"

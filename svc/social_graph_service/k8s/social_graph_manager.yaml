@@ -25,7 +25,7 @@ spec:
         - containerPort: 9090
         volumeMounts:
         - name: mutual-auth
-          mountPath: /etc/delinkcious/mutual-auth.yaml
+          mountPath: /etc/delinkcious
           readOnly: true
       volumes:
       - name: mutual-auth
