@@ -22,6 +22,14 @@ spec:
         image: g1g1/delinkcious-social-graph:0.2
         ports:
         - containerPort: 9090
+        volumeMounts:
+        - name: mutual-auth
+          mountPath: /etc/delinkcious/mutual-auth.yaml
+          readOnly: true
+      volumes:
+      - name: mutual-auth
+        secret:
+          secretName: mutual-auth
 ---
 apiVersion: v1
 kind: Service

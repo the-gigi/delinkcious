@@ -6,3 +6,4 @@ metadata:
 data:
   MAX_LINKS_PER_USER: "10"
   PORT: "8080"
+  SERVICE_NAME: "link-manager"
