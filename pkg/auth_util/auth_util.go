@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-
 const callersFilename = "/etc/delinkcious/mutual-auth.yaml"
+
 var callersByName = map[string]string{}
 var callersByToken = map[string][]string{}
 
@@ -36,7 +36,7 @@ func GetToken(caller string) string {
 }
 
 func HasCaller(caller string, token string) bool {
-	for _,  c :=  range callersByToken[token] {
+	for _, c := range callersByToken[token] {
 		if c == caller {
 			return true
 		}

@@ -6,14 +6,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/the-gigi/delinkcious/pkg/db_util"
 	lm "github.com/the-gigi/delinkcious/pkg/link_manager"
+	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	sgm "github.com/the-gigi/delinkcious/pkg/social_graph_client"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
-	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
-
 
 type EventSink struct {
 }
@@ -29,7 +28,6 @@ func (s *EventSink) OnLinkUpdated(username string, link *om.Link) {
 func (s *EventSink) OnLinkDeleted(username string, url string) {
 	//log.Println("Link deleted")
 }
-
 
 func Run() {
 	dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
@@ -56,8 +54,6 @@ func Run() {
 	if port == "" {
 		port = "8080"
 	}
-
-
 
 	maxLinksPerUserStr := os.Getenv("MAX_LINKS_PER_USER")
 	if maxLinksPerUserStr == "" {

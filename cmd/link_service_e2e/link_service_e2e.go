@@ -60,7 +60,6 @@ func runLinkService(ctx context.Context) {
 	err = os.Setenv("SERVICE_NAME", "link-manager")
 	check(err)
 
-
 	runService(ctx, ".", "link_service")
 }
 

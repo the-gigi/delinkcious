@@ -12,7 +12,6 @@ import (
 	"strings"
 )
 
-
 type followRequest struct {
 	Followed string `json:"followed"`
 	Follower string `json:"follower"`
