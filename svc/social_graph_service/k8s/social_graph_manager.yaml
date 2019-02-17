@@ -20,6 +20,7 @@ spec:
       containers:
       - name: social-graph-manager
         image: g1g1/delinkcious-social-graph:0.3
+        imagePullPolicy: Always
         ports:
         - containerPort: 9090
         volumeMounts:
@@ -29,7 +30,7 @@ spec:
       volumes:
       - name: mutual-auth
         secret:
-          secretName: mutual-auth
+          secretName: social-graph-mutual-auth
 ---
 apiVersion: v1
 kind: Service

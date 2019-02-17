@@ -27,6 +27,7 @@ spec:
       containers:
       - name: link-manager
         image: g1g1/delinkcious-link:0.3
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         envFrom:
@@ -39,7 +40,7 @@ spec:
       volumes:
       - name: mutual-auth
         secret:
-          secretName: mutual-auth
+          secretName: link-mutual-auth
 ---
 apiVersion: v1
 kind: Service
