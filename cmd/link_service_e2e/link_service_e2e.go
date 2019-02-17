@@ -57,9 +57,6 @@ func runLinkService(ctx context.Context) {
 	err = os.Setenv("MAX_LINKS_PER_USER", "10")
 	check(err)
 
-	err = os.Setenv("SERVICE_NAME", "link-manager")
-	check(err)
-
 	runService(ctx, ".", "link_service")
 }
 

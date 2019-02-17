@@ -14,6 +14,8 @@ import (
 	"strings"
 )
 
+const SERVICE_NAME = "social-graph-manager"
+
 func NewClient(baseURL string) (om.SocialGraphManager, error) {
 	// Quickly sanitize the instance string.
 	if !strings.HasPrefix(baseURL, "http") {
@@ -75,7 +77,7 @@ func encodeHTTPGenericRequest(_ context.Context, r *http.Request, request interf
 	r.Body = ioutil.NopCloser(&buf)
 
 	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") != "false" {
-		token := auth_util.GetToken(os.Getenv("SERVICE_NAME"))
+		token := auth_util.GetToken(SERVICE_NAME)
 		r.Header["Delinkcious-Caller-Token"] = []string{token}
 	}
 
