@@ -19,4 +19,5 @@ require (
 	github.com/stretchr/testify v1.2.2 // indirect
 	golang.org/x/sys v0.0.0-20181116161606-93218def8b18 // indirect
 	google.golang.org/appengine v1.3.0 // indirect
+	gopkg.in/yaml.v2 v2.2.1
 )

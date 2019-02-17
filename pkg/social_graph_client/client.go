@@ -5,10 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/the-gigi/delinkcious/pkg/auth_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -71,6 +73,12 @@ func encodeHTTPGenericRequest(_ context.Context, r *http.Request, request interf
 		return err
 	}
 	r.Body = ioutil.NopCloser(&buf)
+
+	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") == "true" {
+		token := auth_util.GetToken(os.Getenv("SERVICE_NAME"))
+		r.Header["Delinkcious-Caller-Token"] = []string{token}
+	}
+
 	return nil
 }
 

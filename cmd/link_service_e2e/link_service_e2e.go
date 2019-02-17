@@ -57,6 +57,10 @@ func runLinkService(ctx context.Context) {
 	err = os.Setenv("MAX_LINKS_PER_USER", "10")
 	check(err)
 
+	err = os.Setenv("SERVICE_NAME", "link-manager")
+	check(err)
+
+
 	runService(ctx, ".", "link_service")
 }
 
@@ -72,12 +76,22 @@ func killServer(ctx context.Context) {
 }
 
 func main() {
+	// Turn on authentication
+	err := os.Setenv("DELINKCIOUS_MUTUAL_AUTH", "true")
+	check(err)
+
 	initDB()
 
 	ctx := context.Background()
 	defer killServer(ctx)
-	runSocialGraphService(ctx)
-	runLinkService(ctx)
+
+	if os.Getenv("RUN_SOCIAL_GRAPH_SERVICE") == "true" {
+		runSocialGraphService(ctx)
+	}
+
+	if os.Getenv("RUN_LINK_SERVICE") == "true" {
+		runLinkService(ctx)
+	}
 
 	// Run some tests with the client
 	cli, err := link_manager_client.NewClient("localhost:8080")
