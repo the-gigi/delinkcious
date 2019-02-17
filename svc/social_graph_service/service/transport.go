@@ -74,7 +74,7 @@ func decodeGetFollowingRequest(_ context.Context, r *http.Request) (interface{},
 }
 
 func decodeGetFollowersRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") == "true" {
+	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") != "false" {
 		token := r.Header["Delinkcious-Caller-Token"]
 		if len(token) == 0 || token[0] == "" {
 			return nil, errors.New("Missing caller token")

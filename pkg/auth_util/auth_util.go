@@ -13,7 +13,7 @@ var callersByName = map[string]string{}
 var callersByToken = map[string][]string{}
 
 func init() {
-	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") != "true" {
+	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") == "false" {
 		return
 	}
 

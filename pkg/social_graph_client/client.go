@@ -74,7 +74,7 @@ func encodeHTTPGenericRequest(_ context.Context, r *http.Request, request interf
 	}
 	r.Body = ioutil.NopCloser(&buf)
 
-	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") == "true" {
+	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") != "false" {
 		token := auth_util.GetToken(os.Getenv("SERVICE_NAME"))
 		r.Header["Delinkcious-Caller-Token"] = []string{token}
 	}
