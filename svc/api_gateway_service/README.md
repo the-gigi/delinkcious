@@ -6,3 +6,15 @@ It communicates with the other microservices using [API composition](https://mic
 - user service
 - social graph service
 
+
+# Exposing to the world via port forwarding
+
+The simplest way to expose the API gateway to the world is by port-forwrding the Kubernetes service directly:
+
+```
+kubectl port-forward svc/api-gateway 5000:5000
+```
+
+
+
+
