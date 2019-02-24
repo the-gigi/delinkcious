@@ -25,11 +25,19 @@ $ docker push g1g1/delinkcious-link-manager:${VERSION}
 
 ## Deploy to active Kubernetes cluster
 
-If you want to push a local minikube make sure your kuectl is pointed to the right cluster and type:
+If you want to push to a local minikube make sure your kuectl is pointed to the right cluster and type:
 
 ```
-$ kubectl apply -f k8s
+$ kubectl create -f k8s
 ```
+
+## Exposing the LinkManager service locally
+
+```
+kubectl port-forward svc/link-manager 8080:8080
+```
+
+
 
 
 

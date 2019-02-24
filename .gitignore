@@ -13,3 +13,9 @@
 
 # Ignore Goland project files
 .idea
+
+# Ignore service binaries (from local tests)
+svc/link_service/link_service
+svc/social_graph_service/social_graph_service
+svc/user_manger/user_manager
+

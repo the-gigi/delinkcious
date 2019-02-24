@@ -1,7 +1,7 @@
 FROM python:3
 MAINTAINER Gigi Sayfan "the.gigi@gmail.com"
-COPY . /quote-service
-WORKDIR /quote-service
+COPY . /api_gateway_service
+WORKDIR /api_gateway_service
 RUN pip install -r requirements.txt
-EXPOSE 8000
-ENTRYPOINT hug -f app.py
+EXPOSE 5000
+ENTRYPOINT python run.py

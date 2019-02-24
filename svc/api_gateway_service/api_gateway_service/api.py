@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, url_for, session, jsonify
 from flask_oauthlib.client import OAuth
 from flask_restful import Api, abort
@@ -11,8 +13,8 @@ def create_app():
     oauth = OAuth(app)
     github = oauth.remote_app(
         'github',
-        consumer_key='507e57ab372adeb8051b',
-        consumer_secret='08a7dbaa06ac16daab00fac53724ee742c8081c5',
+        consumer_key=os.environ['DELINKCIOUS_GITHUB_CLIENT_ID'],
+        consumer_secret=os.environ['DELINKCIOUS_GITHUB_CLIENT_SECRET'],
         request_token_params={'scope': 'user:email'},
         base_url='https://api.github.com/',
         request_token_url=None,
@@ -42,7 +44,7 @@ app = create_app()
 @app.route('/login')
 def login():
     callback = url_for('authorized', _external=True)
-    result = app.github.authorize(callback=callback)
+    result = app.github.authorize(callback)
     return result
 
 
@@ -63,7 +65,6 @@ def authorized():
         abort(401, message='Access denied!')
     token = resp['access_token']
     # Must be in a list or tuple because github auth code extracts the first
-    user = app.github.get('user', token=[token])
+    user = app.github.get('user', token=(token,))
     user.data['access_token'] = token
     return jsonify(user.data)
-
