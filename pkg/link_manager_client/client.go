@@ -102,14 +102,3 @@ type deleteRequest struct {
 	Username string
 	Url      string
 }
-
-// Extract the request details from the incoming request and add them as query arguments
-func encodeDeleteRequest(ctx context.Context, req *http.Request, request interface{}) error {
-	r := request.(deleteRequest)
-
-	username := url.PathEscape(r.Username)
-	toDeleteUrl := url.PathEscape(r.Url)
-
-	req.URL.Path += "/" + username + "/" + toDeleteUrl
-	return encodeHTTPGenericRequest(ctx, req, request)
-}
