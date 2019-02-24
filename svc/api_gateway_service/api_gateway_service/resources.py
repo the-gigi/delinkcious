@@ -29,8 +29,8 @@ def _get_user():
 
 
 class Link(Resource):
-    host = os.environ.get('LINK_SERVICE_HOST', 'localhost')
-    port = os.environ.get('LINK_SERVICE_HOST', '8080')
+    host = os.environ.get('LINK_MANAGER_SERVICE_HOST', 'localhost')
+    port = os.environ.get('LINK_MANAGER_SERVICE_PORT', '8080')
     base_url = 'http://{}:{}/links'.format(host, port)
 
     def get(self):
