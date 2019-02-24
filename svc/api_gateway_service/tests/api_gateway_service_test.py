@@ -24,7 +24,7 @@ class APIGatewayServiceTest(TestCase):
         self.test_app.post(base_url, data=params)
 
     def test_get_links(self):
-        url = f'{base_url}?username=gigi'
+        url = base_url + '?username=gigi'
         response = self.test_app.get(url, headers='')
         result = json.loads(response.data)
         expected = {}
