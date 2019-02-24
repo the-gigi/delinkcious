@@ -31,7 +31,7 @@ spec:
         - containerPort: 5000
         envFrom:
         - configMapRef:
-            name: link-manager-config
+            name: api-gateway-config
         env:
         - name: GITHUB_CLIENT_ID
           valueFrom:
