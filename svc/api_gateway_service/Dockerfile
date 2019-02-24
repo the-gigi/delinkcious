@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:alpine
 MAINTAINER Gigi Sayfan "the.gigi@gmail.com"
 COPY . /api_gateway_service
 WORKDIR /api_gateway_service
