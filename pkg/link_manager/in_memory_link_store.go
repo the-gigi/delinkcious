@@ -88,7 +88,7 @@ func (m *InMemoryLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, e
 	}
 
 	if request.Username == "" {
-		err = errors.New("User name can't be empty")
+		err = errors.New("user name can't be empty")
 		return
 	}
 
@@ -98,7 +98,7 @@ func (m *InMemoryLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, e
 		userLinks = m.links[request.Username]
 	} else {
 		if userLinks[request.Url] != nil {
-			msg := fmt.Sprintf("User %s already has a link for %s", request.Username, request.Url)
+			msg := fmt.Sprintf("user %s already has a link for %s", request.Username, request.Url)
 			err = errors.New(msg)
 			return
 		}
