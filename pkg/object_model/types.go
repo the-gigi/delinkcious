@@ -2,6 +2,14 @@ package object_model
 
 import "time"
 
+type EventTypeEnum int
+
+const (
+	LinkAdded EventTypeEnum = iota
+	LinkUpdated
+	LinkDeleted
+)
+
 type Link struct {
 	Url         string
 	Title       string
@@ -45,4 +53,21 @@ type UpdateLinkRequest struct {
 type User struct {
 	Email string
 	Name  string
+}
+
+type Event struct {
+	EventType EventTypeEnum
+	Username  string
+	Url       string
+	Timestamp time.Time
+}
+
+type GetNewsRequest struct {
+	Username   string
+	StartToken string
+}
+
+type GetNewsResponse struct {
+	Events    []*Event
+	NextToken string
 }

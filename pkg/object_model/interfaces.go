@@ -25,6 +25,10 @@ type SocialGraphManager interface {
 	//KickFollower(followed string, follower string) error
 }
 
+type NewsManager interface {
+	GetNews(request GetNewsRequest) (GetNewsResponse, error)
+}
+
 type LinkManagerEvents interface {
 	OnLinkAdded(username string, link *Link)
 	OnLinkUpdated(username string, link *Link)
