@@ -1,0 +1,33 @@
+syntax = "proto3";
+package pb;
+
+import "google/protobuf/timestamp.proto";
+
+service News {
+    rpc GetNews(GetNewsRequest) returns (GetNewsResponse) {}
+}
+
+message GetNewsRequest {
+    string username = 1;
+    string startToken = 2;
+}
+
+enum EventType {
+    LINK_ADDED = 0;
+    LINK_UPDATED = 1;
+    LINK_DELETED = 2;
+}
+
+message Event  {
+	EventType eventType = 1;
+	string username = 2;
+	string url = 3;
+	google.protobuf.Timestamp timestamp = 4;
+}
+
+message GetNewsResponse {
+	repeated Event events = 1;
+	string nextToken = 2;
+    string err = 3;
+}
+

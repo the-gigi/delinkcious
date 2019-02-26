@@ -25,7 +25,7 @@ $ docker push g1g1/delinkcious-user-manager:${VERSION}
 
 ## Deploy to active Kubernetes cluster
 
-If you want to push a local minikube make sure your kuectl is pointed to the right cluster and type:
+If you want to push a local minikube make sure your kubectl is pointed to the right cluster and type:
 
 ```
 $ kubectl apply -f k8s

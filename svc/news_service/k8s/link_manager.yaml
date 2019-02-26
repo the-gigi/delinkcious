@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: link-manager
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: link-manager
+  labels:
+    svc: link
+    app: manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: link
+      app: manager
+  serviceAccountName: link-manager
+  template:
+    metadata:
+      labels:
+        svc: link
+        app: manager
+    spec:
+      containers:
+      - name: link-manager
+        image: g1g1/delinkcious-link:0.3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: link-manager-config
+        volumeMounts:
+        - name: mutual-auth
+          mountPath: /etc/delinkcious
+          readOnly: true
+      volumes:
+      - name: mutual-auth
+        secret:
+          secretName: link-mutual-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: link-manager
+spec:
+  ports:
+  - port:  8080
+  selector:
+    svc: link
+    app: manager
