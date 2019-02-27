@@ -38,7 +38,7 @@ func makeGetNewsEndpoint(svc om.NewsManager) endpoint.Endpoint {
 		req := request.(om.GetNewsRequest)
 		r, err := svc.GetNews(req)
 		res := &pb.GetNewsResponse{
-			Events: []*pb.Event{},
+			Events:    []*pb.Event{},
 			NextToken: r.NextToken,
 		}
 		if err != nil {

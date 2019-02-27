@@ -1,4 +1,5 @@
 package news_manager_client
+
 //
 //import (
 //	grpctransport "github.com/go-kit/kit/transport/grpc"
