@@ -26,7 +26,7 @@ type SocialGraphManager interface {
 }
 
 type NewsManager interface {
-	GetNews(request GetNewsRequest) (GetNewsResponse, error)
+	GetNews(request GetNewsRequest) (GetNewsResult, error)
 }
 
 type LinkManagerEvents interface {

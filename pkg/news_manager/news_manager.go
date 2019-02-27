@@ -11,7 +11,7 @@ type NewsManager struct {
 	eventStore *InMemoryNewsStore
 }
 
-func (m *NewsManager) GetNews(req om.GetNewsRequest) (resp om.GetNewsResponse, err error) {
+func (m *NewsManager) GetNews(req om.GetNewsRequest) (resp om.GetNewsResult, err error) {
 	if req.Username == "" {
 		err = errors.New("user name can't be empty")
 		return

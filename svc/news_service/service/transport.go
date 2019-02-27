@@ -30,21 +30,25 @@ func decodeGetNewsRequest(_ context.Context, r interface{}) (interface{}, error)
 }
 
 func encodeGetNewsResponse(_ context.Context, r interface{}) (interface{}, error) {
-	resp := r.(om.GetNewsResponse)
-	result := &pb.GetNewsResponse{
-		NextToken: resp.NextToken,
-	}
-	for _, e := range resp.Events {
-		event := newEvent(e)
-		result.Events = append(result.Events, event)
-	}
-	return result, nil
+	return r, nil
 }
 
 func makeGetNewsEndpoint(svc om.NewsManager) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(om.GetNewsRequest)
-		return svc.GetNews(req)
+		r, err := svc.GetNews(req)
+		res := &pb.GetNewsResponse{
+			Events: []*pb.Event{},
+			NextToken: r.NextToken,
+		}
+		if err != nil {
+			res.Err = err.Error()
+		}
+		for _, e := range r.Events {
+			event := newEvent(e)
+			res.Events = append(res.Events, event)
+		}
+		return res, nil
 	}
 }
 
@@ -62,10 +66,11 @@ func newNewsServer(svc om.NewsManager) pb.NewsServer {
 	}
 }
 
-func (s *handler) GetNews(ctx context.Context, r *pb.GetNewsRequest) (response *pb.GetNewsResponse, err error) {
+func (s *handler) GetNews(ctx context.Context, r *pb.GetNewsRequest) (*pb.GetNewsResponse, error) {
 	_, resp, err := s.getNews.ServeGRPC(ctx, r)
 	if err != nil {
 		return nil, err
 	}
+
 	return resp.(*pb.GetNewsResponse), nil
 }

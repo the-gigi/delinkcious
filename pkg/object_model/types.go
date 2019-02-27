@@ -67,7 +67,7 @@ type GetNewsRequest struct {
 	StartToken string
 }
 
-type GetNewsResponse struct {
+type GetNewsResult struct {
 	Events    []*Event
 	NextToken string
 }
