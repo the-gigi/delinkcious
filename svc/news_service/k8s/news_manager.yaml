@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: news-manager
-        image: g1g1/denewscious-news:0.3
+        image: g1g1/delinkcious-news:0.3
         imagePullPolicy: Always
         ports:
         - containerPort: 6060
