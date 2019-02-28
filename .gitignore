@@ -18,4 +18,5 @@
 svc/link_service/link_service
 svc/social_graph_service/social_graph_service
 svc/user_manger/user_manager
+svc/news_service/news_service
 
