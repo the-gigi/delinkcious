@@ -2,6 +2,7 @@ package news_manager
 
 import (
 	"errors"
+	"github.com/the-gigi/delinkcious/pkg/link_manager_events"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"strconv"
 	"time"
@@ -61,7 +62,15 @@ func (m *NewsManager) OnLinkDeleted(username string, url string) {
 	m.eventStore.AddEvent(username, event)
 }
 
-func NewNewsManager() (om.NewsManager, error) {
+func NewNewsManager(natsUrl string) (om.NewsManager, error) {
+	nm := &NewsManager{eventStore: NewInMemoryNewsStore()}
 
-	return &NewsManager{eventStore: NewInMemoryNewsStore()}, nil
+	if natsUrl != "" {
+		err := link_manager_events.Listen(natsUrl, nm)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return nm, nil
 }
