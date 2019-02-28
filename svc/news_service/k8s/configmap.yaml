@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: link-manager-config
+  name: news-manager-config
   namespace: default
 data:
   PORT: "6060"
