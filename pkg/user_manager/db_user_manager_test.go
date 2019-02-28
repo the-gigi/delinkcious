@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/the-gigi/delinkcious/pkg/db_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	. "github.com/the-gigi/delinkcious/pkg/test_util"
 )
 
 var _ = Describe("user manager tests with DB ", func() {
