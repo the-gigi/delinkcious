@@ -4,6 +4,6 @@ metadata:
   name: link-manager-config
   namespace: default
 data:
-  MAX_LINKS_PER_USER: "10"
-  PORT: "8080"
+  PORT: "6060"
+
 

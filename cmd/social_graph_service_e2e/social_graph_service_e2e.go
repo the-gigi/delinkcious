@@ -4,10 +4,9 @@ import (
 	"context"
 	_ "github.com/lib/pq"
 	"github.com/the-gigi/delinkcious/pkg/db_util"
+	. "github.com/the-gigi/delinkcious/pkg/test_util"
 	"github.com/the-gigi/delinkcious/pkg/social_graph_client"
 	"log"
-	"os"
-	"os/exec"
 )
 
 func check(err error) {
@@ -16,23 +15,6 @@ func check(err error) {
 	}
 }
 
-func runService(ctx context.Context) {
-	// Build the server if needed
-	_, err := os.Stat("./social_graph_service")
-	if os.IsNotExist(err) {
-		out, err := exec.Command("go", "build", ".").CombinedOutput()
-		log.Println(out)
-		check(err)
-	}
-
-	cmd := exec.CommandContext(ctx, "./social_graph_service")
-	err = cmd.Start()
-	check(err)
-}
-
-func killServer(ctx context.Context) {
-	ctx.Done()
-}
 
 func initDB() {
 	db, err := db_util.RunLocalDB("social_graph_manager")
@@ -47,8 +29,8 @@ func main() {
 	initDB()
 
 	ctx := context.Background()
-	defer killServer(ctx)
-	runService(ctx)
+	defer KillServer(ctx)
+	RunService(ctx, ".", "social_graph_service")
 
 	// Run some tests with the client
 	cli, err := social_graph_client.NewClient("localhost:9090")

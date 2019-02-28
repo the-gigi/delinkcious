@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/the-gigi/delinkcious/pb/news_service/pb"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
@@ -15,9 +16,9 @@ func newEvent(e *om.Event) (event *pb.Event) {
 		Url:       e.Url,
 	}
 
-	event.Timestamp.Seconds = e.Timestamp.Unix()
-	event.Timestamp.Nanos = (int32(e.Timestamp.UnixNano() - 1e9*event.Timestamp.Seconds))
-
+	seconds := e.Timestamp.Unix()
+	nanos := (int32(e.Timestamp.UnixNano() - 1e9*seconds))
+	event.Timestamp = &timestamp.Timestamp{Seconds: seconds, Nanos: nanos}
 	return
 }
 

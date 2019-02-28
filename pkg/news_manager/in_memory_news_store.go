@@ -15,7 +15,7 @@ type InMemoryNewsStore struct {
 	userEvents UserEvents
 }
 
-func (m *InMemoryNewsStore) GetNews(username string, startIndex int) (events []*om.Event, err error) {
+func (m *InMemoryNewsStore) GetNews(username string, startIndex int) (events []*om.Event, nextIndex int, err error) {
 	userEvents := m.userEvents[username]
 	if startIndex > len(userEvents) {
 		err = errors.New("Index out of bounds")
@@ -25,6 +25,9 @@ func (m *InMemoryNewsStore) GetNews(username string, startIndex int) (events []*
 	pageSize := len(userEvents) - startIndex
 	if pageSize > maxPageSize {
 		pageSize = maxPageSize
+		nextIndex = startIndex + maxPageSize
+	} else {
+		nextIndex = -1
 	}
 
 	events = userEvents[startIndex : startIndex+pageSize]

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/the-gigi/delinkcious/pb/news_service/pb"
 	nm "github.com/the-gigi/delinkcious/pkg/news_manager"
 	"google.golang.org/grpc"
@@ -20,12 +21,17 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	svc, err := nm.NewNewsManager()
+	natsHostname := os.Getenv("NATS_CLUSTER_SERVICE_HOST")
+	natsPort := os.Getenv("NATS_CLUSTER_SERVICE_PORT")
+	svc, err := nm.NewNewsManager(natsHostname, natsPort)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	gRPCServer := grpc.NewServer()
 	pb.RegisterNewsServer(gRPCServer, newNewsServer(svc))
-	gRPCServer.Serve(listener)
+
+	fmt.Printf("News service is listening on port %s...\n", port)
+	err = gRPCServer.Serve(listener)
+	fmt.Println("Serve() failed", err)
 }

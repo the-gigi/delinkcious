@@ -14,7 +14,7 @@ type LinkManager struct {
 
 func (m *LinkManager) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
 	if request.Username == "" {
-		err = errors.New("User name can't be empty")
+		err = errors.New("user name can't be empty")
 		return
 	}
 
@@ -76,7 +76,7 @@ func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
 			return err
 		}
 
-		for follower, _ := range followers {
+		for follower := range followers {
 			m.eventSink.OnLinkAdded(follower, link)
 		}
 	}
@@ -104,7 +104,7 @@ func (m *LinkManager) UpdateLink(request om.UpdateLinkRequest) (err error) {
 			return err
 		}
 
-		for follower, _ := range followers {
+		for follower := range followers {
 			m.eventSink.OnLinkUpdated(follower, link)
 		}
 	}
@@ -132,7 +132,7 @@ func (m *LinkManager) DeleteLink(username string, url string) (err error) {
 			return err
 		}
 
-		for follower, _ := range followers {
+		for follower := range followers {
 			m.eventSink.OnLinkDeleted(follower, url)
 		}
 	}

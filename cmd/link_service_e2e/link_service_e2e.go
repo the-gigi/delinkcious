@@ -6,80 +6,49 @@ import (
 	"github.com/the-gigi/delinkcious/pkg/db_util"
 	"github.com/the-gigi/delinkcious/pkg/link_manager_client"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
+	. "github.com/the-gigi/delinkcious/pkg/test_util"
 	"log"
 	"os"
-	"os/exec"
 )
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
 
 func initDB() {
 	db, err := db_util.RunLocalDB("link_manager")
-	check(err)
+	Check(err)
 
 	tables := []string{"tags", "links"}
 	for _, table := range tables {
 		err = db_util.DeleteFromTableIfExist(db, table)
-		check(err)
+		Check(err)
 	}
-}
-
-// Build and run a service in a target directory
-func runService(ctx context.Context, targetDir string, service string) {
-	// Save and restore later current working dir
-	wd, err := os.Getwd()
-	check(err)
-	defer os.Chdir(wd)
-
-	// Build the server if needed
-	os.Chdir(targetDir)
-	_, err = os.Stat("./" + service)
-	if os.IsNotExist(err) {
-		out, err := exec.Command("go", "build", ".").CombinedOutput()
-		log.Println(out)
-		check(err)
-	}
-
-	cmd := exec.CommandContext(ctx, "./"+service)
-	err = cmd.Start()
-	check(err)
 }
 
 func runLinkService(ctx context.Context) {
 	// Set environment
 	err := os.Setenv("PORT", "8080")
-	check(err)
+	Check(err)
 
 	err = os.Setenv("MAX_LINKS_PER_USER", "10")
-	check(err)
+	Check(err)
 
-	runService(ctx, ".", "link_service")
+	RunService(ctx, ".", "link_service")
 }
 
 func runSocialGraphService(ctx context.Context) {
 	err := os.Setenv("PORT", "9090")
-	check(err)
+	Check(err)
 
-	runService(ctx, "../social_graph_service", "social_graph_service")
-}
-
-func killServer(ctx context.Context) {
-	ctx.Done()
+	RunService(ctx, "../social_graph_service", "social_graph_service")
 }
 
 func main() {
 	// Turn on authentication
 	err := os.Setenv("DELINKCIOUS_MUTUAL_AUTH", "true")
-	check(err)
+	Check(err)
 
 	initDB()
 
 	ctx := context.Background()
-	defer killServer(ctx)
+	defer KillServer(ctx)
 
 	if os.Getenv("RUN_SOCIAL_GRAPH_SERVICE") == "true" {
 		runSocialGraphService(ctx)
@@ -91,19 +60,19 @@ func main() {
 
 	// Run some tests with the client
 	cli, err := link_manager_client.NewClient("localhost:8080")
-	check(err)
+	Check(err)
 
 	links, err := cli.GetLinks(om.GetLinksRequest{Username: "gigi"})
-	check(err)
+	Check(err)
 	log.Print("gigi's links:", links)
 
 	err = cli.AddLink(om.AddLinkRequest{Username: "gigi",
 		Url:   "https://github.com/the-gigi",
 		Title: "Gigi on Github",
 		Tags:  map[string]bool{"programming": true}})
-	check(err)
+	Check(err)
 	links, err = cli.GetLinks(om.GetLinksRequest{Username: "gigi"})
-	check(err)
+	Check(err)
 	log.Print("gigi's links:", links)
 
 	err = cli.UpdateLink(om.UpdateLinkRequest{Username: "gigi",
@@ -111,8 +80,8 @@ func main() {
 		Description: "Most of my open source code is here"},
 	)
 
-	check(err)
+	Check(err)
 	links, err = cli.GetLinks(om.GetLinksRequest{Username: "gigi"})
-	check(err)
+	Check(err)
 	log.Print("gigi's links:", links)
 }

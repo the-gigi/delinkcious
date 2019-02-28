@@ -27,7 +27,16 @@ func (m *NewsManager) GetNews(req om.GetNewsRequest) (resp om.GetNewsResult, err
 		}
 	}
 
-	resp.Events, err = m.eventStore.GetNews(req.Username, startIndex)
+	events, nextIndex, err := m.eventStore.GetNews(req.Username, startIndex)
+	if err != nil {
+		return
+	}
+
+	resp.Events = events
+	if nextIndex != -1 {
+		resp.NextToken = strconv.Itoa(nextIndex)
+	}
+
 	return
 }
 
@@ -49,7 +58,6 @@ func (m *NewsManager) OnLinkUpdated(username string, link *om.Link) {
 		Timestamp: time.Now().UTC(),
 	}
 	m.eventStore.AddEvent(username, event)
-
 }
 
 func (m *NewsManager) OnLinkDeleted(username string, url string) {
@@ -62,10 +70,10 @@ func (m *NewsManager) OnLinkDeleted(username string, url string) {
 	m.eventStore.AddEvent(username, event)
 }
 
-func NewNewsManager(natsUrl string) (om.NewsManager, error) {
+func NewNewsManager(natsHostname string, natsPort string) (om.NewsManager, error) {
 	nm := &NewsManager{eventStore: NewInMemoryNewsStore()}
-
-	if natsUrl != "" {
+	if natsHostname != "" {
+		natsUrl := natsHostname + ":" + natsPort
 		err := link_manager_events.Listen(natsUrl, nm)
 		if err != nil {
 			return nil, err
