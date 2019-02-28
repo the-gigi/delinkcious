@@ -33,14 +33,6 @@ spec:
         envFrom:
         - configMapRef:
             name: news-manager-config
-        volumeMounts:
-        - name: mutual-auth
-          mountPath: /etc/denewscious
-          readOnly: true
-      volumes:
-      - name: mutual-auth
-        secret:
-          secretName: news-mutual-auth
 ---
 apiVersion: v1
 kind: Service
