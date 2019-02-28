@@ -5,7 +5,6 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"github.com/the-gigi/delinkcious/pkg/db_util"
-	. "github.com/the-gigi/delinkcious/pkg/test_util"
 	lm "github.com/the-gigi/delinkcious/pkg/link_manager"
 	nats "github.com/the-gigi/delinkcious/pkg/link_manager_events"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
