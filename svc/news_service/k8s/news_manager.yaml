@@ -29,7 +29,7 @@ spec:
         image: g1g1/denewscious-news:0.3
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 6060
         envFrom:
         - configMapRef:
             name: news-manager-config
@@ -48,7 +48,7 @@ metadata:
   name: news-manager
 spec:
   ports:
-  - port:  8080
+  - port:  6060
   selector:
     svc: news
     app: manager
