@@ -1,6 +1,5 @@
 package news_manager_client
 
-
 import (
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	"github.com/the-gigi/delinkcious/pb/news_service/pb"
@@ -36,6 +35,3 @@ func NewClient(grpcAddr string) (cli om.NewsManager, disconnectFunc DisconnectFu
 	}
 	return
 }
-
-
-

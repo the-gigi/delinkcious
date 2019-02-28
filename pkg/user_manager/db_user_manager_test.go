@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/the-gigi/delinkcious/pkg/db_util"
-	. "github.com/the-gigi/delinkcious/pkg/test_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
+	. "github.com/the-gigi/delinkcious/pkg/test_util"
 )
 
 var _ = Describe("user manager tests with DB ", func() {

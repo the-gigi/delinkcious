@@ -31,4 +31,3 @@ func RunLocalNatsServer() (err error) {
 
 	return
 }
-

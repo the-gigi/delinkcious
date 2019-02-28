@@ -18,15 +18,14 @@ func encodeGetNewsRequest(_ context.Context, r interface{}) (interface{}, error)
 	return &pb.GetNewsRequest{
 		Username:   req.Username,
 		StartToken: req.StartToken,
-	}, nil;
+	}, nil
 }
-
 
 func newEvent(e *pb.Event) (event *om.Event) {
 	return &om.Event{
 		EventType: (om.EventTypeEnum)(e.EventType),
-		Username: e.Username,
-		Url: e.Url,
+		Username:  e.Username,
+		Url:       e.Url,
 		Timestamp: time.Unix(e.Timestamp.GetSeconds(), (int64)(e.Timestamp.GetNanos())),
 	}
 }
@@ -37,11 +36,11 @@ func decodeGetNewsResponse(_ context.Context, r interface{}) (interface{}, error
 		return nil, errors.New(gnr.Err)
 	}
 
-	res := &om.GetNewsResult {
+	res := &om.GetNewsResult{
 		NextToken: gnr.NextToken,
 	}
 
-	for _, e := range  gnr.Events {
+	for _, e := range gnr.Events {
 		res.Events = append(res.Events, newEvent(e))
 	}
 	return res, nil
