@@ -70,6 +70,22 @@ class Link(Resource):
 
         return r.json()
 
+    def put(self):
+        username, email = _get_user()
+        parser = RequestParser()
+        parser.add_argument('url', type=str, required=True)
+        parser.add_argument('title', type=str, required=True)
+        parser.add_argument('description', type=str, required=False)
+        parser.add_argument('add_tags', type=str, required=False)
+        parser.add_argument('remove_tags', type=str, required=False)
+        args = parser.parse_args()
+        args.update(username=username)
+        r = requests.put(self.base_url, json=args)
+        if not r.ok:
+            abort(r.status_code, message=r.content)
+
+        return r.json()
+
     def delete(self):
         username, email = _get_user()
         parser = RequestParser()
