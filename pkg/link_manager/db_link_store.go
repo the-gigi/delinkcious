@@ -52,14 +52,14 @@ func createSchema(db *sql.DB) (err error) {
 		  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP          
         );
-		CREATE UNIQUE INDEX IF NOT EXISTS links_username_idx ON links(username);
+		CREATE INDEX IF NOT EXISTS links_username_idx ON links(username);
 
         CREATE TABLE IF NOT EXISTS tags (
           id SERIAL PRIMARY KEY,
           link_id   INTEGER REFERENCES links(id) ON DELETE CASCADE,			
           name      TEXT		  
         );
-        CREATE UNIQUE INDEX IF NOT EXISTS tags_name_idx ON tags(name);
+        CREATE INDEX IF NOT EXISTS tags_name_idx ON tags(name);
     `
 
 	_, err = db.Exec(schema)
