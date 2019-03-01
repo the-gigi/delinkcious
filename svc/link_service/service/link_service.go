@@ -41,12 +41,12 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	sgHost := os.Getenv("SOCIAL_GRAPH_SERVICE_HOST")
+	sgHost := os.Getenv("SOCIAL_GRAPH_MANAGER_SERVICE_HOST")
 	if sgHost == "" {
 		sgHost = "localhost"
 	}
 
-	sgPort := os.Getenv("SOCIAL_GRAPH_SERVICE_PORT")
+	sgPort := os.Getenv("SOCIAL_GRAPH_MANAGER_SERVICE_PORT")
 	if sgPort == "" {
 		sgPort = "9090"
 	}
