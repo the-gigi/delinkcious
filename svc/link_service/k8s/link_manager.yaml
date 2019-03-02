@@ -17,13 +17,13 @@ spec:
     matchLabels:
       svc: link
       app: manager
-  serviceAccountName: link-manager
   template:
     metadata:
       labels:
         svc: link
         app: manager
     spec:
+      serviceAccount: link-manager
       containers:
       - name: link-manager
         image: g1g1/delinkcious-link:0.3
