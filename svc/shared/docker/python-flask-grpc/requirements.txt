@@ -1,0 +1,7 @@
+requests-oauthlib==1.1.0
+Flask-OAuthlib==0.9.5
+Flask-RESTful==0.3.7
+Flask-SQLAlchemy==2.3.2
+mock==2.0.0
+grpcio==1.18.0
+grpcio-tools==1.18.0

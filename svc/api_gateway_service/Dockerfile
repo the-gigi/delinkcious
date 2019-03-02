@@ -1,6 +1,5 @@
-FROM python:alpine
+FROM g1g1/delinkcious-python-flask-grpc:0.1
 MAINTAINER Gigi Sayfan "the.gigi@gmail.com"
-RUN apk add build-base
 COPY . /api_gateway_service
 WORKDIR /api_gateway_service
 RUN pip install -r requirements.txt
