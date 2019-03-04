@@ -7,12 +7,12 @@ import (
 
 const maxPageSize = 10
 
-// User links are a map of url:TaggedLink
-type UserEvents map[string][]*om.Event
+// User events are a map of username:userEvents
+type userEvents map[string][]*om.Event
 
-// Link store is a map of username:userEvents
+// InMemoryNewsStore manages a UserEvents data structure
 type InMemoryNewsStore struct {
-	userEvents UserEvents
+	userEvents userEvents
 }
 
 func (m *InMemoryNewsStore) GetNews(username string, startIndex int) (events []*om.Event, nextIndex int, err error) {
@@ -54,5 +54,5 @@ func (m *InMemoryNewsStore) AddEvent(username string, event *om.Event) (err erro
 }
 
 func NewInMemoryNewsStore() *InMemoryNewsStore {
-	return &InMemoryNewsStore{UserEvents{}}
+	return &InMemoryNewsStore{userEvents{}}
 }
