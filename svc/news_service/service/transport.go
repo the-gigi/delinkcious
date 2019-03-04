@@ -57,6 +57,15 @@ type handler struct {
 	getNews grpctransport.Handler
 }
 
+func (s *handler) GetNews(ctx context.Context, r *pb.GetNewsRequest) (*pb.GetNewsResponse, error) {
+	_, resp, err := s.getNews.ServeGRPC(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*pb.GetNewsResponse), nil
+}
+
 func newNewsServer(svc om.NewsManager) pb.NewsServer {
 	return &handler{
 		getNews: grpctransport.NewServer(
@@ -65,13 +74,4 @@ func newNewsServer(svc om.NewsManager) pb.NewsServer {
 			encodeGetNewsResponse,
 		),
 	}
-}
-
-func (s *handler) GetNews(ctx context.Context, r *pb.GetNewsRequest) (*pb.GetNewsResponse, error) {
-	_, resp, err := s.getNews.ServeGRPC(ctx, r)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*pb.GetNewsResponse), nil
 }
