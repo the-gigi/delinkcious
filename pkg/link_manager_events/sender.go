@@ -13,14 +13,14 @@ type eventSender struct {
 }
 
 func (s *eventSender) OnLinkAdded(username string, link *om.Link) {
-	err := s.nats.Publish("link-events", Event{om.LinkAdded, username, link})
+	err := s.nats.Publish(subject, Event{om.LinkAdded, username, link})
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func (s *eventSender) OnLinkUpdated(username string, link *om.Link) {
-	err := s.nats.Publish("link-events", Event{om.LinkUpdated, username, link})
+	err := s.nats.Publish(subject, Event{om.LinkUpdated, username, link})
 	if err != nil {
 		log.Fatal(err)
 	}

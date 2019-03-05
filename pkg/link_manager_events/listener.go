@@ -10,7 +10,7 @@ func Listen(url string, sink om.LinkManagerEvents) (err error) {
 		return
 	}
 
-	conn.Subscribe("link-events", func(e *Event) {
+	conn.Subscribe(subject, func(e *Event) {
 		switch e.EventType {
 		case om.LinkAdded:
 			{
