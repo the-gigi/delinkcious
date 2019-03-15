@@ -6,7 +6,7 @@ import (
 )
 
 func RunLocalNatsServer() (err error) {
-	// Launch the DB if not running
+	// Launch the NATS server if not running
 	out, err := exec.Command("docker", "ps", "-f", "name=gnatsd", "--format", "{{.Names}}").CombinedOutput()
 	if err != nil {
 		return
@@ -14,7 +14,7 @@ func RunLocalNatsServer() (err error) {
 
 	s := string(out)
 	if s == "" {
-		out, err = exec.Command("docker", "restart", "postgres").CombinedOutput()
+		out, err = exec.Command("docker", "restart", "gnatsd").CombinedOutput()
 		if err != nil {
 			log.Print(string(out))
 			_, err = exec.Command("docker", "run", "-d", "--name", "gnatsd",
