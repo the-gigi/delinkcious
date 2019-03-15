@@ -9,7 +9,7 @@ import (
 )
 
 type NewsManager struct {
-	eventStore *InMemoryNewsStore
+	newsStore Store
 }
 
 func (m *NewsManager) GetNews(req om.GetNewsRequest) (resp om.GetNewsResult, err error) {
@@ -27,7 +27,7 @@ func (m *NewsManager) GetNews(req om.GetNewsRequest) (resp om.GetNewsResult, err
 		}
 	}
 
-	events, nextIndex, err := m.eventStore.GetNews(req.Username, startIndex)
+	events, nextIndex, err := m.newsStore.GetNews(req.Username, startIndex)
 	if err != nil {
 		return
 	}
@@ -47,7 +47,7 @@ func (m *NewsManager) OnLinkAdded(username string, link *om.Link) {
 		Url:       link.Url,
 		Timestamp: time.Now().UTC(),
 	}
-	m.eventStore.AddEvent(username, event)
+	m.newsStore.AddEvent(username, event)
 }
 
 func (m *NewsManager) OnLinkUpdated(username string, link *om.Link) {
@@ -57,7 +57,7 @@ func (m *NewsManager) OnLinkUpdated(username string, link *om.Link) {
 		Url:       link.Url,
 		Timestamp: time.Now().UTC(),
 	}
-	m.eventStore.AddEvent(username, event)
+	m.newsStore.AddEvent(username, event)
 }
 
 func (m *NewsManager) OnLinkDeleted(username string, url string) {
@@ -67,11 +67,11 @@ func (m *NewsManager) OnLinkDeleted(username string, url string) {
 		Url:       url,
 		Timestamp: time.Now().UTC(),
 	}
-	m.eventStore.AddEvent(username, event)
+	m.newsStore.AddEvent(username, event)
 }
 
-func NewNewsManager(natsHostname string, natsPort string) (om.NewsManager, error) {
-	nm := &NewsManager{eventStore: NewInMemoryNewsStore()}
+func NewNewsManager(store Store, natsHostname string, natsPort string) (om.NewsManager, error) {
+	nm := &NewsManager{newsStore: store}
 	if natsHostname != "" {
 		natsUrl := natsHostname + ":" + natsPort
 		err := link_manager_events.Listen(natsUrl, nm)

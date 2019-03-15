@@ -10,7 +10,7 @@ var _ = Describe("In-memory link manager tests", func() {
 	var newsManager *NewsManager
 
 	BeforeEach(func() {
-		nm, err := NewNewsManager("", "")
+		nm, err := NewNewsManager(NewInMemoryNewsStore(), "", "")
 		Ω(err).Should(BeNil())
 		newsManager = nm.(*NewsManager)
 		Ω(newsManager).ShouldNot(BeNil())

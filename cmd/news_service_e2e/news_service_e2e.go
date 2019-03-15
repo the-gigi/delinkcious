@@ -22,6 +22,12 @@ func runNewsService(ctx context.Context) {
 	err = os.Setenv("NATS_CLUSTER_SERVICE_PORT", "4222")
 	Check(err)
 
+	err = os.Setenv("NEWS_MANAGER_REDIS_SERVICE_HOST", "localhost")
+	Check(err)
+
+	err = os.Setenv("NEWS_MANAGER_REDIS_SERVICE_PORT", "6379")
+	Check(err)
+
 	if os.Getenv("RUN_NEWS_SERVICE") != "false" {
 		RunService(ctx, ".", "news_service")
 	}
@@ -32,7 +38,13 @@ func main() {
 	defer KillServer(ctx)
 
 	fmt.Println("Launching local NATS server...")
-	RunLocalNatsServer()
+	err := RunLocalNatsServer()
+	Check(err)
+	time.Sleep(time.Second * 1)
+
+	fmt.Println("Launching local Redis server...")
+	err = RunLocalRedisServer()
+	Check(err)
 	time.Sleep(time.Second * 1)
 
 	if os.Getenv("RUN_NEWS_SERVICE") != "false" {

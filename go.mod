@@ -1,10 +1,12 @@
 module github.com/the-gigi/delinkcious
 
 require (
+	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/Masterminds/squirrel v0.0.0-20181030160206-3ba160b0147f
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-kit/kit v0.8.0
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
+	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.2.0
@@ -20,6 +22,7 @@ require (
 	github.com/nats-io/nuid v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
+	github.com/pelletier/go-toml v1.2.0
 	github.com/stretchr/testify v1.3.0 // indirect
 	golang.org/x/crypto v0.0.0-20190225124518-7f87c0fbb88b // indirect
 	golang.org/x/net v0.0.0-20190225153610-fe579d43d832

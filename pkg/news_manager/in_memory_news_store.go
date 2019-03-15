@@ -5,7 +5,7 @@ import (
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
 
-const maxPageSize = 10
+const inMemoryMaxPageSize = 10
 
 // User events are a map of username:userEvents
 type userEvents map[string][]*om.Event
@@ -23,9 +23,9 @@ func (m *InMemoryNewsStore) GetNews(username string, startIndex int) (events []*
 	}
 
 	pageSize := len(userEvents) - startIndex
-	if pageSize > maxPageSize {
-		pageSize = maxPageSize
-		nextIndex = startIndex + maxPageSize
+	if pageSize > inMemoryMaxPageSize {
+		pageSize = inMemoryMaxPageSize
+		nextIndex = startIndex + inMemoryMaxPageSize
 	} else {
 		nextIndex = -1
 	}

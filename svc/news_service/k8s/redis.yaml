@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: news-manager-redis
+spec:
+  serviceName: news-manager-redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      svc: news-manager
+  template:
+    metadata:
+      labels:
+        app: redis
+        svc: news-manager
+    spec:
+      containers:
+      - name: redis-primary
+        image: redis:5.0.3-alpine
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+        - name: news-manager-redis
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: news-manager-redis
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: news-manager-redis
+  labels:
+    app: redis
+    svc: news-manager
+spec:
+  selector:
+    app: redis
+    svc: news-manager
+  type: ClusterIP
+  ports:
+  - port: 6379
+    name: redis

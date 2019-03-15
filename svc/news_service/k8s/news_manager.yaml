@@ -17,13 +17,13 @@ spec:
     matchLabels:
       svc: news
       app: manager
-  serviceAccountName: news-manager
   template:
     metadata:
       labels:
         svc: news
         app: manager
     spec:
+      serviceAccount: news-manager
       containers:
       - name: news-manager
         image: g1g1/delinkcious-news:0.3
