@@ -40,7 +40,7 @@ func (m *RedisNewsStore) GetNews(username string, startIndex int) (events []*om.
 }
 
 func (m *RedisNewsStore) AddEvent(username string, event *om.Event) (err error) {
-	t, err := toml.Marshal(event)
+	t, err := toml.Marshal(*event)
 	if err != nil {
 		return
 	}

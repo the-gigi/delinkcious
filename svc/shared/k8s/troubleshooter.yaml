@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trouble
+  labels:
+    run: trobule
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: trouble
+  template:
+    metadata:
+      labels:
+        run: trouble
+    spec:
+      containers:
+      - name: trouble
+        image: g1g1/py-kube:0.2
+        imagePullPolicy: Always
+        command: ["/bin/bash", "-c", "while true ; do sleep 10 ; done"]
+        volumeMounts:
+        - name: keep-me
+          mountPath: "/data"
+      imagePullSecrets:
+      - name: private-dockerhub
+      volumes:
+      - name: keep-me
+        persistentVolumeClaim:
+          claimName: some-storage
+
+
+
