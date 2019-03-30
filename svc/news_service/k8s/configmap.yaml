@@ -5,5 +5,8 @@ metadata:
   namespace: default
 data:
   PORT: "6060"
+  NEWS_MANAGER_REDIS_SERVICE_HOST: "news-manager-redis-0.news-manager-redis.default.svc.cluster.local"
+  USER_DB_SERVICE_PORT: "6379"
+
 
 
