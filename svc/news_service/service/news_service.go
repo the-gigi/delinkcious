@@ -24,8 +24,8 @@ func Run() {
 	natsHostname := os.Getenv("NATS_CLUSTER_SERVICE_HOST")
 	natsPort := os.Getenv("NATS_CLUSTER_SERVICE_PORT")
 
-	redisHostname := os.Getenv("NEW_MANAGER_REDIS_SERVICE_HOST")
-	redisPort := os.Getenv("NEW_MANAGER_REDIS_SERVICE_PORT")
+	redisHostname := os.Getenv("NEWS_MANAGER_REDIS_SERVICE_HOST")
+	redisPort := os.Getenv("NEWS_MANAGER_REDIS_SERVICE_PORT")
 
 	var store nm.Store
 	if redisHostname == "" {
