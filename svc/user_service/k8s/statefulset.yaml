@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: user-db
+spec:
+  selector:
+    matchLabels:
+      svc: user
+      app: postgres
+  serviceName: user-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        svc: user
+        app: postgres
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: postgres:11.1-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: user_manager
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: PGDATA
+          value: /data/user-db
+
+        volumeMounts:
+        - name: user-db
+          mountPath: /data/user-db
+  volumeClaimTemplates:
+  - metadata:
+      name: user-db
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      # storageClassName: <custom storage class>
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-db
+spec:
+  ports:
+  - port: 5432
+  clusterIP: None
+  selector:
+    svc: user
+    app: postgres

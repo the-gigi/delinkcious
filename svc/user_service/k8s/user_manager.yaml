@@ -23,6 +23,9 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 7070
+        envFrom:
+        - configMapRef:
+            name: user-manager-config
         resources:
           requests:
             memory: 64Mi
