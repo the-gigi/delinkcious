@@ -6,5 +6,3 @@ metadata:
 data:
   USER_DB_SERVICE_HOST: "user-db-0.user-db.default.svc.cluster.local"
   USER_DB_SERVICE_PORT: "5432"
-
-
