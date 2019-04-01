@@ -1,4 +1,4 @@
-package link_manager
+package link_checker
 
 import (
 	. "github.com/onsi/ginkgo"
