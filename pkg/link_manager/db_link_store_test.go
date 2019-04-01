@@ -23,11 +23,13 @@ var _ = Describe("DB link store tests", func() {
 		linkStore, err = NewDbLinkStore(dbHost, dbPort, "postgres", "postgres")
 		if err != nil {
 			_, err = db_util.RunLocalDB("postgres")
+			Ω(err).Should(BeNil())
 			if err != nil {
 				log.Fatal(err)
 			}
 
 			linkStore, err = NewDbLinkStore(dbHost, dbPort, "postgres", "postgres")
+			Ω(err).Should(BeNil())
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -65,6 +67,7 @@ var _ = Describe("DB link store tests", func() {
 		link := res.Links[0]
 		Ω(link.Url).Should(Equal(r2.Url))
 		Ω(link.Title).Should(Equal(r2.Title))
+		Ω(link.Status).Should(Equal(om.LinkStatusPending))
 
 	})
 
@@ -123,4 +126,35 @@ var _ = Describe("DB link store tests", func() {
 		Ω(err).Should(BeNil())
 		Ω(res.Links).Should(HaveLen(0))
 	})
+
+	It("should set link status", func() {
+		// Add a link
+		r := om.AddLinkRequest{
+			Username: "gigi",
+			Url:      "https://golang.org/",
+			Title:    "Golang",
+			Tags:     map[string]bool{"programming": true},
+		}
+		_, err := linkStore.AddLink(r)
+		Ω(err).Should(BeNil())
+
+		// Should have 1 link
+		r2 := om.GetLinksRequest{Username: "gigi"}
+		res, err := linkStore.GetLinks(r2)
+		Ω(err).Should(BeNil())
+		Ω(res.Links).Should(HaveLen(1))
+		Ω(res.Links[0].Status).Should(Equal(om.LinkStatusPending))
+
+		// Set link status
+		err = linkStore.SetLinkStatus("gigi", r.Url, om.LinkStatusValid)
+		Ω(err).Should(BeNil())
+
+		// The link status should be valid now instead of pending
+		res, err = linkStore.GetLinks(r2)
+		Ω(err).Should(BeNil())
+		Ω(res.Links).Should(HaveLen(1))
+		Ω(res.Links[0].Status).Should(Equal(om.LinkStatusValid))
+
+	})
+
 })

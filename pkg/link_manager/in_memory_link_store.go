@@ -108,6 +108,7 @@ func (m *InMemoryLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, e
 		Url:         request.Url,
 		Title:       request.Title,
 		Description: request.Description,
+		Status:      om.LinkStatusPending,
 		CreatedAt:   time.Now().UTC(),
 		UpdatedAt:   time.Now().UTC(),
 		Tags:        request.Tags,
@@ -162,5 +163,24 @@ func (m *InMemoryLinkStore) DeleteLink(username string, url string) error {
 	}
 
 	delete(m.links[username], url)
+	return nil
+}
+
+func (m *InMemoryLinkStore) SetLinkStatus(username string, url string, status om.LinkStatus) error {
+	if url == "" {
+		return errors.New("URL can't be empty")
+	}
+
+	if username == "" {
+		return errors.New("User name can't be empty")
+	}
+
+	userLinks := m.links[username]
+	if userLinks == nil || userLinks[url] == nil {
+		msg := fmt.Sprintf("User %s doesn't have a link for %s", username, url)
+		return errors.New(msg)
+	}
+
+	userLinks[url].Status = status
 	return nil
 }

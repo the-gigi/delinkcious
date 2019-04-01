@@ -21,9 +21,6 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	natsHostname := os.Getenv("NATS_CLUSTER_SERVICE_HOST")
-	natsPort := os.Getenv("NATS_CLUSTER_SERVICE_PORT")
-
 	redisHostname := os.Getenv("NEWS_MANAGER_REDIS_SERVICE_HOST")
 	redisPort := os.Getenv("NEWS_MANAGER_REDIS_SERVICE_PORT")
 
@@ -37,6 +34,9 @@ func Run() {
 			log.Fatal(err)
 		}
 	}
+
+	natsHostname := os.Getenv("NATS_CLUSTER_SERVICE_HOST")
+	natsPort := os.Getenv("NATS_CLUSTER_SERVICE_PORT")
 
 	svc, err := nm.NewNewsManager(store, natsHostname, natsPort)
 	if err != nil {

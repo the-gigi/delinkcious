@@ -43,12 +43,18 @@ func NewDbLinkStore(host string, port int, username string, password string) (st
 
 func createSchema(db *sql.DB) (err error) {
 	schema := `
+		DO $$ BEGIN
+    		CREATE TYPE link_status AS ENUM ('pending', 'valid', 'invalid');
+		EXCEPTION
+    		WHEN duplicate_object THEN null;
+		END $$;		
         CREATE TABLE IF NOT EXISTS links (
           id SERIAL   PRIMARY KEY,
 		  username    TEXT,
           url TEXT    NOT NULL,
           title TEXT  NOT NULL,
 		  description TEXT,
+	      status      link_status NOT NULL DEFAULT 'pending',		
 		  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP          
         );
@@ -99,9 +105,9 @@ func (s *DbLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksRe
 	var username string
 	for rows.Next() {
 		if request.Tag != "" {
-			err = rows.Scan(&id, &username, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt, &tag_id, &id, &tag_name)
+			err = rows.Scan(&id, &username, &link.Url, &link.Title, &link.Description, &link.Status, &link.CreatedAt, &link.UpdatedAt, &tag_id, &id, &tag_name)
 		} else {
-			err = rows.Scan(&id, &username, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt)
+			err = rows.Scan(&id, &username, &link.Url, &link.Title, &link.Description, &link.Status, &link.CreatedAt, &link.UpdatedAt)
 		}
 		if err != nil {
 			return
@@ -135,7 +141,7 @@ func (s *DbLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, err err
 	var link_id int
 	var username string
 	row := q.RunWith(s.db).QueryRow()
-	err = row.Scan(&link_id, &username, &link.Url, &link.Title, &link.Description, &link.CreatedAt, &link.UpdatedAt)
+	err = row.Scan(&link_id, &username, &link.Url, &link.Title, &link.Description, &link.Status, &link.CreatedAt, &link.UpdatedAt)
 	if err != nil {
 		return
 	}
@@ -197,10 +203,35 @@ func (s *DbLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, e
 	}
 
 	return
-
 }
 
 func (s *DbLinkStore) DeleteLink(username string, url string) (err error) {
 	_, err = s.sb.Delete("links").Where(sq.Eq{"username": username, "url": url}).RunWith(s.db).Exec()
+	return
+}
+
+func (s *DbLinkStore) SetLinkStatus(username string, url string, status om.LinkStatus) (err error) {
+	m := map[om.LinkStatus]string{
+		om.LinkStatusPending: "pending",
+		om.LinkStatusValid:   "valid",
+		om.LinkStatusInvalid: "invalid",
+	}
+
+	q := s.sb.Update("links").Where(sq.Eq{"username": username, "url": url})
+	q = q.Set("status", m[status])
+	res, err := q.RunWith(s.db).Exec()
+	if err != nil {
+		return
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowsAffected != 1 {
+		err = errors.New("update failed")
+	}
+
 	return
 }

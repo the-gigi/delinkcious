@@ -5,7 +5,7 @@ import (
 )
 
 type Event struct {
-	EventType om.EventTypeEnum
+	EventType om.LinkManagerEventTypeEnum
 	Username  string
 	Link      *om.Link
 }

@@ -2,6 +2,7 @@ package link_manager
 
 import (
 	"errors"
+	"github.com/the-gigi/delinkcious/pkg/link_checker_events"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
 
@@ -139,8 +140,13 @@ func (m *LinkManager) DeleteLink(username string, url string) (err error) {
 	return
 }
 
+func (m *LinkManager) OnLinkChecked(username string, url string, status om.LinkStatus) {
+	m.linkStore.SetLinkStatus(username, url, status)
+}
+
 func NewLinkManager(linkStore LinkStore,
 	socialGraphManager om.SocialGraphManager,
+	natsUrl string,
 	eventSink om.LinkManagerEvents,
 	maxLinksPerUser int64) (om.LinkManager, error) {
 	if linkStore == nil {
@@ -151,10 +157,17 @@ func NewLinkManager(linkStore LinkStore,
 		return nil, errors.New("social graph manager can't be nil if event sink is not nil")
 	}
 
-	return &LinkManager{
+	link_manager := &LinkManager{
 		linkStore:          linkStore,
 		socialGraphManager: socialGraphManager,
 		eventSink:          eventSink,
 		maxLinksPerUser:    maxLinksPerUser,
-	}, nil
+	}
+
+	// Subscribe LinkManager to link checker events if nats is ocnfigured
+	if natsUrl != "" {
+		link_checker_events.Listen(natsUrl, link_manager)
+	}
+
+	return link_manager, nil
 }

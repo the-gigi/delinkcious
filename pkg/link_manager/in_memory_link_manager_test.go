@@ -13,6 +13,7 @@ var _ = Describe("In-memory link manager tests", func() {
 	BeforeEach(func() {
 		linkManager, err = NewLinkManager(NewInMemoryLinkStore(),
 			nil,
+			"",
 			nil,
 			10)
 		Ω(err).Should(BeNil())
@@ -101,4 +102,52 @@ var _ = Describe("In-memory link manager tests", func() {
 		Ω(err).Should(BeNil())
 		Ω(res.Links).Should(HaveLen(0))
 	})
+
+	It("should update link status when receiving OnLinkChecked() calls", func() {
+		// Add a link
+		r := om.AddLinkRequest{
+			Username: "gigi",
+			Url:      "https://golang.org/",
+			Title:    "Golang",
+			Tags:     map[string]bool{"programming": true},
+		}
+		err := linkManager.AddLink(r)
+		Ω(err).Should(BeNil())
+
+		// Should have 1 link in pending status
+		r2 := om.GetLinksRequest{Username: "gigi"}
+		res, err := linkManager.GetLinks(r2)
+		Ω(err).Should(BeNil())
+		Ω(res.Links).Should(HaveLen(1))
+		Ω(res.Links[0].Status).Should(Equal(om.LinkStatusPending))
+
+		// Call OnLinkChecked() with valid status on link manager (after type asserting to LinkCheckerEvents)
+		linkCheckSink := linkManager.(om.LinkCheckerEvents)
+		linkCheckSink.OnLinkChecked("gigi", r.Url, om.LinkStatusValid)
+
+		// The link should have valid status
+		res, err = linkManager.GetLinks(r2)
+		Ω(err).Should(BeNil())
+		Ω(res.Links).Should(HaveLen(1))
+		Ω(res.Links[0].Status).Should(Equal(om.LinkStatusValid))
+
+		// Call OnLinkChecked() with valid status again
+		linkCheckSink.OnLinkChecked("gigi", r.Url, om.LinkStatusValid)
+
+		// The link should still have valid status
+		res, err = linkManager.GetLinks(r2)
+		Ω(err).Should(BeNil())
+		Ω(res.Links).Should(HaveLen(1))
+		Ω(res.Links[0].Status).Should(Equal(om.LinkStatusValid))
+
+		// Call OnLinkChecked() with invalid status
+		linkCheckSink.OnLinkChecked("gigi", r.Url, om.LinkStatusInvalid)
+		// The link should have invalid status now
+		res, err = linkManager.GetLinks(r2)
+		Ω(err).Should(BeNil())
+		Ω(res.Links).Should(HaveLen(1))
+		Ω(res.Links[0].Status).Should(Equal(om.LinkStatusInvalid))
+
+	})
+
 })

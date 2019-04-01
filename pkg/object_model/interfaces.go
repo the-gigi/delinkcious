@@ -34,3 +34,7 @@ type LinkManagerEvents interface {
 	OnLinkUpdated(username string, link *Link)
 	OnLinkDeleted(username string, url string)
 }
+
+type LinkCheckerEvents interface {
+	OnLinkChecked(username string, url string, status LinkStatus)
+}
