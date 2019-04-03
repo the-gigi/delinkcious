@@ -6,6 +6,7 @@ import (
 )
 
 const subject = "link-check-events"
+const queue = "the-queue"
 
 func connect(url string) (encodedConn *nats.EncodedConn, err error) {
 	conn, err := nats.Connect(url)
@@ -23,7 +24,7 @@ func Listen(url string, sink om.LinkCheckerEvents) (err error) {
 		return
 	}
 
-	conn.Subscribe(subject, func(e *Event) {
+	conn.QueueSubscribe(subject, queue, func(e *Event) {
 		sink.OnLinkChecked(e.Username, e.Url, e.Status)
 	})
 

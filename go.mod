@@ -20,6 +20,8 @@ require (
 	github.com/nats-io/go-nats v1.7.2
 	github.com/nats-io/nkeys v0.0.2 // indirect
 	github.com/nats-io/nuid v1.0.0 // indirect
+	github.com/nuclio/logger v0.0.1 // indirect
+	github.com/nuclio/nuclio-sdk-go v0.0.0-20190401104533-71056ddc877b
 	github.com/onsi/ginkgo v1.7.0
 	github.com/onsi/gomega v1.4.3
 	github.com/pelletier/go-toml v1.2.0
