@@ -1,0 +1,18 @@
+apiVersion: "nuclio.io/v1beta1"
+kind: "NuclioFunction"
+spec:
+  description: >
+    A function with a configuration that connects to NATS, listens to LinkAdded events, check the links and send
+    LinkValid or LinkInvalid events.
+  runtime: "golang"
+  handler: main:Handler
+  minReplicas: 1
+maxReplicas: 1
+
+triggers:
+  nats:
+    kind: "nats"
+    url: "nats-cluster.default.svc.cluster.local:4222"
+    attributes:
+      "topic": "link-events"
+      "queueName": "link-checker-func"

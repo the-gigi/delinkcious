@@ -21,7 +21,22 @@ func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
 
 	body := event.GetBody()
 	e := link_manager_events.Event{}
-	json.Unmarshal(body, &e)
+
+	err := json.Unmarshal(body, &e)
+	if err != nil {
+		msg := fmt.Sprintf("failed to unmarshal body: %v", body)
+		context.Logger.Error(msg)
+
+		r.StatusCode = 500
+		r.Body = []byte(fmt.Sprintf(msg))
+		return r, errors.New(msg)
+
+	}
+
+	// If it's not a LinkAdded event just bail out
+	if e.EventType != om.LinkAdded {
+		return r, nil
+	}
 
 	url := e.Link.Url
 	username := e.Username
@@ -31,12 +46,12 @@ func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
 		context.Logger.Error(msg)
 
 		r.StatusCode = 500
-		r.Body = []byte(fmt.Sprintf(msg, username, url))
+		r.Body = []byte(msg)
 		return r, errors.New(msg)
 	}
 
 	status := om.LinkStatusValid
-	err := link_checker.CheckLink(url)
+	err = link_checker.CheckLink(url)
 	if err != nil {
 		status = om.LinkStatusInvalid
 	}
