@@ -1,6 +1,6 @@
 # User Service End to End Test
 
-Go to the link manager service directory and run the e2e test
+Go to the user manager service directory and run the e2e test
 
 ```
 cd ../../svc/user_service
