@@ -13,6 +13,7 @@ type link struct {
 	Url         string
 	Title       string
 	Description string
+	Status      string
 	Tags        map[string]bool
 	CreatedAt   string
 	UpdatedAt   string
@@ -23,6 +24,7 @@ func newLink(source om.Link) link {
 		Url:         source.Url,
 		Title:       source.Title,
 		Description: source.Description,
+		Status:      source.Status,
 		Tags:        source.Tags,
 		CreatedAt:   source.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   source.UpdatedAt.Format(time.RFC3339),
