@@ -1,45 +1,30 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/nuclio/nuclio-sdk-go"
 	"github.com/the-gigi/delinkcious/pkg/link_checker"
 	"github.com/the-gigi/delinkcious/pkg/link_checker_events"
+	"github.com/the-gigi/delinkcious/pkg/link_manager_events"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	"os"
 )
 
-//func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
-//	context.Logger.Info("This is an unstrucured %s", "log")
-//
-//	return nuclio.Response{
-//		StatusCode:  200,
-//		ContentType: "application/text",
-//		Body:        []byte("Hello, from nuclio :]"),
-//	}, nil
-//}
+const natsUrl = "nats-cluster.default.svc.cluster.local:4222"
 
 func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
-	natsUrl := ""
-	natsHostname := os.Getenv("NATS_CLUSTER_SERVICE_HOST")
-	natsPort := os.Getenv("NATS_CLUSTER_SERVICE_PORT")
-	if natsHostname != "" {
-		natsUrl = fmt.Sprintf("%s:%s", natsHostname, natsPort)
-	}
-
 	r := nuclio.Response{
 		StatusCode:  200,
 		ContentType: "application/text",
 	}
 
-	if natsUrl == "" {
-		r.Body = []byte("No NATS url. Skipping link check")
-		return r, nil
-	}
+	body := event.GetBody()
+	e := link_manager_events.Event{}
+	json.Unmarshal(body, &e)
 
-	username := os.Getenv("USERNAME")
-	url := os.Getenv("URL")
+	url := e.Link.Url
+	username := e.Username
 
 	if username == "" || url == "" {
 		msg := fmt.Sprintf("missing USERNAME ('%s') and/or URL ('%s')", username, url)
