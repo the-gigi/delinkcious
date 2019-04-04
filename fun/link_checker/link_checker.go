@@ -20,7 +20,6 @@ import (
 //	}, nil
 //}
 
-
 func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
 	natsUrl := ""
 	natsHostname := os.Getenv("NATS_CLUSTER_SERVICE_HOST")
@@ -69,7 +68,6 @@ func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
 	sender.OnLinkChecked(username, url, status)
 	return r, nil
 }
-
 
 func main() {
 
