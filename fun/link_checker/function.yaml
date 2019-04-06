@@ -7,12 +7,11 @@ spec:
   runtime: "golang"
   handler: main:Handler
   minReplicas: 1
-maxReplicas: 1
-
-triggers:
-  nats:
-    kind: "nats"
-    url: "nats-cluster.default.svc.cluster.local:4222"
-    attributes:
-      "topic": "link-events"
-      "queueName": "link-checker-func"
+  maxReplicas: 1
+  triggers:
+    link-checker-trigger:
+      kind: "nats"
+      url: "nats://nats-cluster.default.svc.cluster.local:4222"
+      attributes:
+        "topic": "link-events"
+        "queueName": "link-checker-func"
