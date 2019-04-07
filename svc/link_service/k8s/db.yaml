@@ -25,7 +25,7 @@ spec:
         env:
         - name: POSTGRES_DB
           value: link_manager
-        - name: POSTGRES_link
+        - name: POSTGRES_USER
           value: postgres
         - name: POSTGRES_PASSWORD
           value: postgres
