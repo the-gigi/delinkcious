@@ -26,8 +26,8 @@ spec:
       serviceAccount: link-manager
       containers:
       - name: link-manager
-        image: g1g1/delinkcious-link
-        #imagePullPolicy: Always
+        image: g1g1/delinkcious-link:0.3
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         envFrom:
