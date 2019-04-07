@@ -72,7 +72,7 @@ func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
 		return
 	}
 
-	log.Println("AddLink() user: %s, url: %s, title: %s", request.Username, request.Url, request.Title)
+	log.Print("AddLink() user: %s, url: %s, title: %s\n", request.Username, request.Url, request.Title)
 	if m.eventSink != nil {
 		log.Println("EventSink is not nil, checking followers")
 		followers, err := m.socialGraphManager.GetFollowers(request.Username)
