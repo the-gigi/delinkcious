@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/the-gigi/delinkcious/pkg/link_checker_events"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
+	"log"
 )
 
 type LinkManager struct {
@@ -71,13 +72,20 @@ func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
 		return
 	}
 
+	log.Println("AddLink() user: %s, url: %s, title: %s", request.Username, request.Url, request.Title)
 	if m.eventSink != nil {
+		log.Println("EventSink is not nil, checking followers")
 		followers, err := m.socialGraphManager.GetFollowers(request.Username)
 		if err != nil {
 			return err
 		}
 
+		if len(followers) == 0 {
+			log.Println("No followers :-(")
+		}
+
 		for follower := range followers {
+			log.Println("Sending link added event to:", follower)
 			m.eventSink.OnLinkAdded(follower, link)
 		}
 	}
