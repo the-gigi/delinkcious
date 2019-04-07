@@ -12,7 +12,7 @@ metadata:
     svc: link
     app: manager
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       svc: link
