@@ -1,0 +1,15 @@
+# Get all YAML files
+yaml_files = str(local("""python -c 'from glob import glob; print(",".join(glob("k8s/*.yaml")))'"""))[:-1]
+yaml_files = yaml_files.split(',')
+for f in yaml_files:
+    k8s_yaml(f)
+
+
+# Get service name
+name = str(local("""python -c 'import os; print(os.getcwd().split("/")[-1].split("_")[0])'"""))[:-1]
+
+docker_build('g1g1/delinkcious-' + name, '.', dockerfile='Dockerfile.dev')
+
+
+
+
