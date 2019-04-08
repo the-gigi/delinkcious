@@ -3,11 +3,11 @@ package service
 import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	"github.com/the-gigi/delinkcious/pkg/db_util"
 	sgm "github.com/the-gigi/delinkcious/pkg/social_graph_manager"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 func check(err error) {
@@ -18,28 +18,19 @@ func check(err error) {
 
 func Run() {
 	log.Println("Service started...")
-	dbHost := os.Getenv("SOCIAL_GRAPH_DB_SERVICE_HOST")
-	if dbHost == "" {
-		dbHost = "localhost"
+	dbHost, dbPort, err := db_util.GetDbEndpoint("link_service")
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	dbPortStr := os.Getenv("SOCIAL_GRAPH_DB_SERVICE_PORT")
-	if dbPortStr == "" {
-		dbPortStr = "5432"
-	}
+	log.Println("DB host:", dbHost, "DB port:", dbPort)
+	store, err := sgm.NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
+	check(err)
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "9090"
 	}
-
-	log.Println("DB host:", dbHost, "DB port:", dbPortStr)
-
-	dbPort, err := strconv.Atoi(dbPortStr)
-	check(err)
-
-	store, err := sgm.NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
-	check(err)
 
 	svc, err := sgm.NewSocialGraphManager(store)
 	check(err)
