@@ -5,6 +5,7 @@ import requests
 from flask import request
 from flask_restful import Resource, abort
 from flask_restful.reqparse import RequestParser
+from urllib.parse import urlencode
 
 github = None
 
@@ -90,10 +91,10 @@ class Link(Resource):
         parser.add_argument('url', type=str, required=True)
         args = parser.parse_args()
         args.update(username=username)
-        r = requests.delete(self.base_url, **args)
+        url = '{}?{}'.format(self.base_url, urlencode(args))
+        r = requests.delete(url)
         if not r.ok:
             abort(r.status_code, message=r.content)
-
         return r.json()
 
 
