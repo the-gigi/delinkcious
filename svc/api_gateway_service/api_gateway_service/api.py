@@ -34,7 +34,7 @@ def create_app():
     resource_map = (
         (Link, '/v1.0/links'),
         (Followers, '/v1.0/followers'),
-        (Following, '/v1.0/followeing'),
+        (Following, '/v1.0/following'),
     )
 
     for resource, route in resource_map:
