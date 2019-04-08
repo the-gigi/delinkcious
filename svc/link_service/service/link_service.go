@@ -32,7 +32,7 @@ func (s *EventSink) OnLinkDeleted(username string, url string) {
 }
 
 func Run() {
-	dbHost, dbPort, err := db_util.GetDbEndpoint("link_manager")
+	dbHost, dbPort, err := db_util.GetDbEndpoint("link")
 	if err != nil {
 		log.Fatal(err)
 	}
