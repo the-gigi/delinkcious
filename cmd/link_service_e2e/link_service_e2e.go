@@ -84,4 +84,11 @@ func main() {
 	links, err = cli.GetLinks(om.GetLinksRequest{Username: "gigi"})
 	Check(err)
 	log.Print("gigi's links:", links)
+
+	err = cli.DeleteLink("gigi", "https://github.com/the-gigi")
+	Check(err)
+	Check(err)
+	links, err = cli.GetLinks(om.GetLinksRequest{Username: "gigi"})
+	Check(err)
+	log.Print("gigi's links:", links)
 }

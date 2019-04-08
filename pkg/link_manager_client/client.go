@@ -46,7 +46,7 @@ func NewClient(baseURL string) (om.LinkManager, error) {
 	deleteLinkEndpoint := httptransport.NewClient(
 		"DELETE",
 		copyURL(u, "/links"),
-		encodeHTTPGenericRequest,
+		encodeDeleteLinkRequest,
 		decodeSimpleResponse).Endpoint()
 
 	// Returning the EndpointSet as an interface relies on the
@@ -98,7 +98,11 @@ func encodeGetLinksRequest(ctx context.Context, req *http.Request, request inter
 	return encodeHTTPGenericRequest(ctx, req, request)
 }
 
-type deleteRequest struct {
-	Username string
-	Url      string
+func encodeDeleteLinkRequest(ctx context.Context, req *http.Request, request interface{}) error {
+	r := request.(*deleteLinkRequest)
+	q := req.URL.Query()
+	q.Add("username", r.Username)
+	q.Add("url", r.Url)
+	req.URL.RawQuery = q.Encode()
+	return encodeHTTPGenericRequest(ctx, req, request)
 }

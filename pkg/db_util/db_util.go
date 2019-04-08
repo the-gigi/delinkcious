@@ -93,7 +93,7 @@ func EnsureDB(host string, port int, username string, password string, dbName st
 	return
 }
 
-func DeleteFromTableIfExist(db *sql.DB, table string) (error) {
+func DeleteFromTableIfExist(db *sql.DB, table string) error {
 	_, err := db.Exec("DELETE from " + table)
 	if err != nil {
 		expected := fmt.Sprintf("pq: relation \"%s\" does not exist", table)
