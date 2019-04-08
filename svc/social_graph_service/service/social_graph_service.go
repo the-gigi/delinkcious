@@ -18,7 +18,7 @@ func check(err error) {
 
 func Run() {
 	log.Println("Service started...")
-	dbHost, dbPort, err := db_util.GetDbEndpoint("link_service")
+	dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
 	if err != nil {
 		log.Fatal(err)
 	}

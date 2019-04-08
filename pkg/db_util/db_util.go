@@ -103,14 +103,14 @@ func DeleteFromTableIfExist(db *sql.DB, table string) (err error) {
 	return
 }
 
-func GetDbEndpoint(dbName string) (host string, port int, err error) {
-	hostEnvVar := strings.ToUpper(dbName) + "_DB_SERVICE_HOST"
+func GetDbEndpoint(serviceName string) (host string, port int, err error) {
+	hostEnvVar := strings.ToUpper(serviceName) + "_DB_SERVICE_HOST"
 	host = os.Getenv(hostEnvVar)
 	if host == "" {
 		host = "localhost"
 	}
 
-	portEnvVar := strings.ToUpper(dbName) + "_DB_SERVICE_PORT"
+	portEnvVar := strings.ToUpper(serviceName) + "_DB_SERVICE_PORT"
 	dbPort := os.Getenv(portEnvVar)
 	if dbPort == "" {
 		dbPort = "5432"
