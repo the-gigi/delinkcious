@@ -23,6 +23,9 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 9090
+        envFrom:
+        - configMapRef:
+            name: social-graph-manager-config
         volumeMounts:
         - name: mutual-auth
           mountPath: /etc/delinkcious
