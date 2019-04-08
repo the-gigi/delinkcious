@@ -113,6 +113,18 @@ class Followers(Resource):
 
         return r.json()
 
+    def post(self):
+        """Add a new follower to the current user"""
+        username, email = _get_user()
+        parser = RequestParser()
+        parser.add_argument('follower', type=str, required=True)
+        args = parser.parse_args()
+        args.update(followed=username)
+        r = requests.post(self.base_url + '/follow', json=args)
+        if not r.ok:
+            abort(r.status_code, message=r.content)
+
+        return r.json()
 
 class Following(Resource):
     host = os.environ.get('SOCIAL_GRAPH_MANAGER_SERVICE_HOST', 'localhost')
