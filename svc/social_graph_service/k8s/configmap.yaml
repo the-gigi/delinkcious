@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: social-graph-manager-config
+  namespace: default
+data:
+  DELINKCIOUS_MUTUAL_AUTH: "false"
+
+
