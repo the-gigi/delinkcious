@@ -1,10 +1,13 @@
 import os
-
 from flask import Flask, url_for, session, jsonify
 from flask_oauthlib.client import OAuth
 from flask_restful import Api, abort
+
 from . import resources
-from .resources import Link
+from .resources import (
+    Link,
+    Followers,
+    Following)
 
 
 def create_app():
@@ -30,6 +33,8 @@ def create_app():
     api = Api(app)
     resource_map = (
         (Link, '/v1.0/links'),
+        (Followers, '/v1.0/followers'),
+        (Following, '/v1.0/followeing'),
     )
 
     for resource, route in resource_map:
