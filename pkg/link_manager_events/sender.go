@@ -13,7 +13,9 @@ type eventSender struct {
 }
 
 func (s *eventSender) OnLinkAdded(username string, link *om.Link) {
-	err := s.nats.Publish(subject, Event{om.LinkAdded, username, link})
+	event := Event{om.LinkAdded, username, link}
+	log.Printf("[link manager events]OnLinkAdded(), sending to subject: %s, event: %v\n", event)
+	err := s.nats.Publish(subject, event)
 	if err != nil {
 		log.Fatal(err)
 	}
