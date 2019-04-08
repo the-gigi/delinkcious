@@ -22,8 +22,6 @@ func Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	log.Println("DB host:", dbHost, "DB port:", dbPort)
 	store, err := sgm.NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
 	check(err)
 

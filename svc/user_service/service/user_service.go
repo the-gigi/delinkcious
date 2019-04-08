@@ -16,7 +16,6 @@ func Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	store, err := sgm.NewDbUserStore(dbHost, dbPort, "postgres", "postgres")
 	if err != nil {
 		log.Fatal(err)

@@ -117,5 +117,6 @@ func GetDbEndpoint(dbName string) (host string, port int, err error) {
 	}
 
 	port, err = strconv.Atoi(dbPort)
+	log.Println("DB host:", host, "DB port:", dbPort)
 	return
 }

@@ -36,7 +36,6 @@ func Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	store, err := lm.NewDbLinkStore(dbHost, dbPort, "postgres", "postgres")
 	if err != nil {
 		log.Fatal(err)
