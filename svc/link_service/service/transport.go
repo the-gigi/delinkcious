@@ -3,10 +3,8 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/go-kit/kit/endpoint"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	"log"
 	"net/http"
 	"time"
 )
@@ -133,17 +131,13 @@ func makeUpdateLinkEndpoint(svc om.LinkManager) endpoint.Endpoint {
 
 func makeDeleteLinkEndpoint(svc om.LinkManager) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
-		fmt.Println("[Link service]transport.DeleteLink() here")
 		req := request.(deleteLinkRequest)
-		fmt.Println("[Link service]transport.DeleteLink() request:", req.Username, req.Url)
 		err := svc.DeleteLink(req.Username, req.Url)
 		res := SimpleResponse{}
 		if err != nil {
-			fmt.Println("[Link service]transport.DeleteLink() failed. err:", err.Error())
 			res.Err = err.Error()
 			return res, err
 		}
-		log.Println("[Link service]transport.DeleteLink() succeeded")
 		return res, nil
 	}
 }
