@@ -8,6 +8,7 @@ import (
 	"github.com/the-gigi/delinkcious/pkg/auth_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -44,6 +45,11 @@ type getFollowingResponse struct {
 	Err       string          `json:"err"`
 }
 
+func newGetByUsernameRequest(username string) (request getByUsernameRequest, err error) {
+	request.Username, err = url.PathUnescape(username)
+	return
+}
+
 func decodeFollowRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request followRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -68,19 +74,18 @@ func decodeGetFollowingRequest(_ context.Context, r *http.Request) (interface{},
 	if username == "" || username == "following" {
 		return nil, errors.New("user name must not be empty")
 	}
-	request := getByUsernameRequest{Username: username}
-	return request, nil
+	return newGetByUsernameRequest(username)
 }
 
 func decodeGetFollowersRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	if os.Getenv("DELINKCIOUS_MUTUAL_AUTH") != "false" {
 		token := r.Header["Delinkcious-Caller-Token"]
 		if len(token) == 0 || token[0] == "" {
-			return nil, errors.New("Missing caller token")
+			return nil, errors.New("missing caller token")
 		}
 
 		if !auth_util.HasCaller("link-manager", token[0]) {
-			return nil, errors.New("Unauthorized caller")
+			return nil, errors.New("unauthorized caller")
 		}
 	}
 	parts := strings.Split(r.URL.Path, "/")
@@ -88,8 +93,8 @@ func decodeGetFollowersRequest(_ context.Context, r *http.Request) (interface{},
 	if username == "" || username == "followers" {
 		return nil, errors.New("user name must not be empty")
 	}
-	request := getByUsernameRequest{Username: username}
-	return request, nil
+
+	return newGetByUsernameRequest(username)
 }
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
