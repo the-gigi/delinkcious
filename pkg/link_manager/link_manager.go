@@ -11,7 +11,7 @@ import (
 )
 
 // Nuclio functions listen by default on port 8080 of their service IP
-const link_checker_func_url = "link-checker.nuclio.svc.cluster.local:8080"
+const link_checker_func_url = "http://link-checker.nuclio.svc.cluster.local:8080"
 
 type LinkManager struct {
 	linkStore          LinkStore
