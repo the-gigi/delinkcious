@@ -7,3 +7,6 @@ spec:
   handler: main:Handler
   minReplicas: 1
   maxReplicas: 1
+  build:
+    commands:
+    - apk --update --no-cache add ca-certificates
