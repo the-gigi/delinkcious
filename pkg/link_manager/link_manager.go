@@ -68,11 +68,10 @@ func triggerLinkCheck(username string, url string) {
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
-			panic(err)
+			return
 		}
 		defer resp.Body.Close()
 	}()
-
 }
 
 func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
