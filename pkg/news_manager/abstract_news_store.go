@@ -5,6 +5,6 @@ import (
 )
 
 type Store interface {
-	GetNews(username string, startIndex int) (events []*om.Event, nextIndex int, err error)
-	AddEvent(username string, event *om.Event) (err error)
+	GetNews(username string, startIndex int) (events []*om.LinkManagerEvent, nextIndex int, err error)
+	AddEvent(username string, event *om.LinkManagerEvent) (err error)
 }

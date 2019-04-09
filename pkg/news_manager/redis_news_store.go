@@ -13,7 +13,7 @@ type RedisNewsStore struct {
 	redis *redis.Client
 }
 
-func (m *RedisNewsStore) GetNews(username string, startIndex int) (events []*om.Event, nextIndex int, err error) {
+func (m *RedisNewsStore) GetNews(username string, startIndex int) (events []*om.LinkManagerEvent, nextIndex int, err error) {
 	stop := startIndex + redisMaxPageSize - 1
 	result, err := m.redis.LRange(username, int64(startIndex), int64(stop)).Result()
 	if err != nil {
@@ -21,7 +21,7 @@ func (m *RedisNewsStore) GetNews(username string, startIndex int) (events []*om.
 	}
 
 	for _, t := range result {
-		var event om.Event
+		var event om.LinkManagerEvent
 		err = toml.Unmarshal([]byte(t), &event)
 		if err != nil {
 			return
@@ -39,7 +39,7 @@ func (m *RedisNewsStore) GetNews(username string, startIndex int) (events []*om.
 	return
 }
 
-func (m *RedisNewsStore) AddEvent(username string, event *om.Event) (err error) {
+func (m *RedisNewsStore) AddEvent(username string, event *om.LinkManagerEvent) (err error) {
 	t, err := toml.Marshal(*event)
 	if err != nil {
 		return

@@ -41,7 +41,7 @@ func (m *NewsManager) GetNews(req om.GetNewsRequest) (resp om.GetNewsResult, err
 }
 
 func (m *NewsManager) OnLinkAdded(username string, link *om.Link) {
-	event := &om.Event{
+	event := &om.LinkManagerEvent{
 		EventType: om.LinkAdded,
 		Username:  username,
 		Url:       link.Url,
@@ -51,7 +51,7 @@ func (m *NewsManager) OnLinkAdded(username string, link *om.Link) {
 }
 
 func (m *NewsManager) OnLinkUpdated(username string, link *om.Link) {
-	event := &om.Event{
+	event := &om.LinkManagerEvent{
 		EventType: om.LinkUpdated,
 		Username:  username,
 		Url:       link.Url,
@@ -61,7 +61,7 @@ func (m *NewsManager) OnLinkUpdated(username string, link *om.Link) {
 }
 
 func (m *NewsManager) OnLinkDeleted(username string, url string) {
-	event := &om.Event{
+	event := &om.LinkManagerEvent{
 		EventType: om.LinkDeleted,
 		Username:  username,
 		Url:       url,

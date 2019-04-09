@@ -64,7 +64,7 @@ type User struct {
 	Name  string
 }
 
-type Event struct {
+type LinkManagerEvent struct {
 	EventType LinkManagerEventTypeEnum
 	Username  string
 	Url       string
@@ -77,6 +77,11 @@ type GetNewsRequest struct {
 }
 
 type GetNewsResult struct {
-	Events    []*Event
+	Events    []*LinkManagerEvent
 	NextToken string
+}
+
+type CheckLinkRequest struct {
+	Username string
+	Url      string
 }

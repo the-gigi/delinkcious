@@ -8,14 +8,14 @@ import (
 const inMemoryMaxPageSize = 10
 
 // User events are a map of username:userEvents
-type userEvents map[string][]*om.Event
+type userEvents map[string][]*om.LinkManagerEvent
 
 // InMemoryNewsStore manages a UserEvents data structure
 type InMemoryNewsStore struct {
 	userEvents userEvents
 }
 
-func (m *InMemoryNewsStore) GetNews(username string, startIndex int) (events []*om.Event, nextIndex int, err error) {
+func (m *InMemoryNewsStore) GetNews(username string, startIndex int) (events []*om.LinkManagerEvent, nextIndex int, err error) {
 	userEvents := m.userEvents[username]
 	if startIndex > len(userEvents) {
 		err = errors.New("Index out of bounds")
@@ -34,7 +34,7 @@ func (m *InMemoryNewsStore) GetNews(username string, startIndex int) (events []*
 	return
 }
 
-func (m *InMemoryNewsStore) AddEvent(username string, event *om.Event) (err error) {
+func (m *InMemoryNewsStore) AddEvent(username string, event *om.LinkManagerEvent) (err error) {
 	if username == "" {
 		err = errors.New("user name can't be empty")
 		return
@@ -46,7 +46,7 @@ func (m *InMemoryNewsStore) AddEvent(username string, event *om.Event) (err erro
 	}
 
 	if m.userEvents[username] == nil {
-		m.userEvents[username] = []*om.Event{}
+		m.userEvents[username] = []*om.LinkManagerEvent{}
 	}
 
 	m.userEvents[username] = append(m.userEvents[username], event)

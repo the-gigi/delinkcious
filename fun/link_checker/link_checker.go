@@ -7,7 +7,6 @@ import (
 	"github.com/nuclio/nuclio-sdk-go"
 	"github.com/the-gigi/delinkcious/pkg/link_checker"
 	"github.com/the-gigi/delinkcious/pkg/link_checker_events"
-	"github.com/the-gigi/delinkcious/pkg/link_manager_events"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 )
 
@@ -20,8 +19,7 @@ func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
 	}
 
 	body := event.GetBody()
-	e := link_manager_events.Event{}
-
+	var e om.CheckLinkRequest
 	err := json.Unmarshal(body, &e)
 	if err != nil {
 		msg := fmt.Sprintf("failed to unmarshal body: %v", body)
@@ -33,14 +31,8 @@ func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
 
 	}
 
-	// If it's not a LinkAdded event just bail out
-	if e.EventType != om.LinkAdded {
-		return r, nil
-	}
-
-	url := e.Link.Url
 	username := e.Username
-
+	url := e.Url
 	if username == "" || url == "" {
 		msg := fmt.Sprintf("missing USERNAME ('%s') and/or URL ('%s')", username, url)
 		context.Logger.Error(msg)

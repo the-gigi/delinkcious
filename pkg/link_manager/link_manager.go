@@ -1,11 +1,17 @@
 package link_manager
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"github.com/the-gigi/delinkcious/pkg/link_checker_events"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	"log"
+	"net/http"
 )
+
+// Nuclio functions listen by default on port 8080 of their service IP
+const link_checker_func_url = "link-checker.nuclio.svc.cluster.local:8080"
 
 type LinkManager struct {
 	linkStore          LinkStore
@@ -49,6 +55,26 @@ func (m *LinkManager) getLinkCount(username string) (linkCount int64, err error)
 	return
 }
 
+func triggerLinkCheck(username string, url string) {
+	go func() {
+		checkLinkRequest := &om.CheckLinkRequest{Username: username, Url: url}
+		data, err := json.Marshal(checkLinkRequest)
+		if err != nil {
+			return
+		}
+
+		req, err := http.NewRequest("POST", link_checker_func_url, bytes.NewBuffer(data))
+		req.Header.Set("Content-Type", "application/json")
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+	}()
+
+}
+
 func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
 	if request.Url == "" {
 		return errors.New("the URL can't be empty")
@@ -84,6 +110,8 @@ func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
 		}
 	}
 
+	// Trigger link check asynchronously (don't wait for result)
+	triggerLinkCheck(request.Username, request.Url)
 	return
 }
 
