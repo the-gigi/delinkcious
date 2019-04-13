@@ -1,8 +1,13 @@
 package link_manager_events
 
-import "github.com/nats-io/go-nats"
+import (
+	"github.com/nats-io/go-nats"
+)
 
-const subject = "link-events"
+const (
+	subject = "link-events"
+	queue   = "the-queue"
+)
 
 func connect(url string) (encodedConn *nats.EncodedConn, err error) {
 	conn, err := nats.Connect(url)
