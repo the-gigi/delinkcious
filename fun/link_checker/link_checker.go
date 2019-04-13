@@ -25,7 +25,7 @@ func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
 		msg := fmt.Sprintf("failed to unmarshal body: %v", body)
 		context.Logger.Error(msg)
 
-		r.StatusCode = 500
+		r.StatusCode = 400
 		r.Body = []byte(fmt.Sprintf(msg))
 		return r, errors.New(msg)
 
@@ -37,7 +37,7 @@ func Handler(context *nuclio.Context, event nuclio.Event) (interface{}, error) {
 		msg := fmt.Sprintf("missing USERNAME ('%s') and/or URL ('%s')", username, url)
 		context.Logger.Error(msg)
 
-		r.StatusCode = 500
+		r.StatusCode = 400
 		r.Body = []byte(msg)
 		return r, errors.New(msg)
 	}
