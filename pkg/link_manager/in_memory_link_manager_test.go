@@ -9,12 +9,16 @@ import (
 var _ = Describe("In-memory link manager tests", func() {
 	var err error
 	var linkManager om.LinkManager
+	var socialGraphManager *mockSocialGraphManager
+	var eventSink *linkManagerEventsSink
 
 	BeforeEach(func() {
+		socialGraphManager = newMockSocialGraphManager([]string{"liat"})
+		eventSink = newLinkManagerEventsSink()
 		linkManager, err = NewLinkManager(NewInMemoryLinkStore(),
-			nil,
+			socialGraphManager,
 			"",
-			nil,
+			eventSink,
 			10)
 		Ω(err).Should(BeNil())
 	})
@@ -45,6 +49,12 @@ var _ = Describe("In-memory link manager tests", func() {
 		Ω(link.Url).Should(Equal(r2.Url))
 		Ω(link.Title).Should(Equal(r2.Title))
 
+		// Verify link manager notified the event sink about a single added event for the follower "liat"
+		Ω(eventSink.addLinkEvents).Should(HaveLen(1))
+		Ω(eventSink.addLinkEvents["liat"]).Should(HaveLen(1))
+		Ω(*eventSink.addLinkEvents["liat"][0]).Should(Equal(link))
+		Ω(eventSink.updateLinkEvents).Should(HaveLen(0))
+		Ω(eventSink.deletedLinkEvents).Should(HaveLen(0))
 	})
 
 	It("should update a link", func() {
@@ -147,7 +157,6 @@ var _ = Describe("In-memory link manager tests", func() {
 		Ω(err).Should(BeNil())
 		Ω(res.Links).Should(HaveLen(1))
 		Ω(res.Links[0].Status).Should(Equal(om.LinkStatusInvalid))
-
 	})
 
 })
