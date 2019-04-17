@@ -35,7 +35,7 @@ func runNewsService(ctx context.Context) {
 
 func main() {
 	ctx := context.Background()
-	defer KillServer(ctx)
+	defer StopService(ctx)
 
 	fmt.Println("Launching local NATS server...")
 	err := RunLocalNatsServer()

@@ -12,15 +12,15 @@ import (
 type UserLinks map[string]*om.Link
 
 // Link store is a map of username:UserLinks
-type InMemoryLinkStore struct {
+type inMemoryLinkStore struct {
 	links map[string]UserLinks
 }
 
-func NewInMemoryLinkStore() LinkStore {
-	return &InMemoryLinkStore{map[string]UserLinks{}}
+func newInMemoryLinkStore() LinkStore {
+	return &inMemoryLinkStore{map[string]UserLinks{}}
 }
 
-func (m *InMemoryLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
+func (m *inMemoryLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
 	result.Links = []om.Link{}
 	userLinks := m.links[request.Username]
 	if userLinks == nil {
@@ -81,7 +81,7 @@ func (m *InMemoryLinkStore) GetLinks(request om.GetLinksRequest) (result om.GetL
 	return
 }
 
-func (m *InMemoryLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, err error) {
+func (m *inMemoryLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, err error) {
 	if request.Url == "" {
 		err = errors.New("URL can't be empty")
 		return
@@ -118,7 +118,7 @@ func (m *InMemoryLinkStore) AddLink(request om.AddLinkRequest) (link *om.Link, e
 	return
 }
 
-func (m *InMemoryLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, err error) {
+func (m *inMemoryLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, err error) {
 	userLinks := m.links[request.Username]
 	if userLinks == nil || userLinks[request.Url] == nil {
 		msg := fmt.Sprintf("User %s doesn't have a link for %s", request.Username, request.Url)
@@ -147,7 +147,7 @@ func (m *InMemoryLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.L
 	return
 }
 
-func (m *InMemoryLinkStore) DeleteLink(username string, url string) error {
+func (m *inMemoryLinkStore) DeleteLink(username string, url string) error {
 	if url == "" {
 		return errors.New("URL can't be empty")
 	}
@@ -166,7 +166,7 @@ func (m *InMemoryLinkStore) DeleteLink(username string, url string) error {
 	return nil
 }
 
-func (m *InMemoryLinkStore) SetLinkStatus(username string, url string, status om.LinkStatus) error {
+func (m *inMemoryLinkStore) SetLinkStatus(username string, url string, status om.LinkStatus) error {
 	if url == "" {
 		return errors.New("URL can't be empty")
 	}

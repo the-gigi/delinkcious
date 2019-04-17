@@ -32,6 +32,6 @@ func RunService(ctx context.Context, targetDir string, service string) {
 	Check(err)
 }
 
-func KillServer(ctx context.Context) {
+func StopService(ctx context.Context) {
 	ctx.Done()
 }

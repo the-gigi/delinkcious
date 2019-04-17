@@ -10,12 +10,12 @@ var _ = Describe("In-memory link manager tests", func() {
 	var err error
 	var linkManager om.LinkManager
 	var socialGraphManager *mockSocialGraphManager
-	var eventSink *linkManagerEventsSink
+	var eventSink *testEventsSink
 
 	BeforeEach(func() {
 		socialGraphManager = newMockSocialGraphManager([]string{"liat"})
 		eventSink = newLinkManagerEventsSink()
-		linkManager, err = NewLinkManager(NewInMemoryLinkStore(),
+		linkManager, err = NewLinkManager(newInMemoryLinkStore(),
 			socialGraphManager,
 			"",
 			eventSink,

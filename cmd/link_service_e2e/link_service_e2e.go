@@ -48,7 +48,7 @@ func main() {
 	initDB()
 
 	ctx := context.Background()
-	defer KillServer(ctx)
+	defer StopService(ctx)
 
 	if os.Getenv("RUN_SOCIAL_GRAPH_SERVICE") == "true" {
 		runSocialGraphService(ctx)

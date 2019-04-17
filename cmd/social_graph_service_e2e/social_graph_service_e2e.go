@@ -28,7 +28,7 @@ func main() {
 	initDB()
 
 	ctx := context.Background()
-	defer KillServer(ctx)
+	defer StopService(ctx)
 	RunService(ctx, ".", "social_graph_service")
 
 	// Run some tests with the client

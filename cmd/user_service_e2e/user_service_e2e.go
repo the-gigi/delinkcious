@@ -33,7 +33,7 @@ func main() {
 	initDB()
 
 	ctx := context.Background()
-	defer KillServer(ctx)
+	defer StopService(ctx)
 	RunService(ctx, ".", "user_service")
 
 	// Run some tests with the client
