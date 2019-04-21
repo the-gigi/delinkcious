@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/the-gigi/delinkcious/pkg/link_checker_events"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	"log"
 	"net/http"
 )
 
@@ -97,7 +96,6 @@ func (m *LinkManager) AddLink(request om.AddLinkRequest) (err error) {
 		return
 	}
 
-	log.Printf("AddLink() user: %s, url: %s, title: %s\n", request.Username, request.Url, request.Title)
 	if m.eventSink != nil {
 		followers, err := m.socialGraphManager.GetFollowers(request.Username)
 		if err != nil {
