@@ -1,0 +1,16 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+requests-oauthlib = "==1.1.0"
+grpcio = "==1.18.0"
+grpcio-tools = "==1.18.0"
+Flask-OAuthlib = "==0.9.5"
+Flask-RESTful = "==0.3.7"
+
+[requires]
+python_version = "3.7"
