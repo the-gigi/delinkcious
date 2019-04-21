@@ -192,7 +192,6 @@ func (s *DbLinkStore) UpdateLink(request om.UpdateLinkRequest) (link *om.Link, e
 		if err != nil {
 			return
 		}
-
 	}
 
 	for t, _ := range request.AddTags {
