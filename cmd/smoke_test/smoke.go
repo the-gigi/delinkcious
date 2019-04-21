@@ -21,12 +21,7 @@ var (
 	httpClient       = http.Client{}
 )
 
-type getLinksResponse struct {
-	Err   string
-	Links []om.Link
-}
-
-func getLinks() []om.Link {
+func getLinks() {
 	req, err := http.NewRequest("GET", string(delinkciousUrl)+"/links", nil)
 	Check(err)
 
@@ -40,21 +35,16 @@ func getLinks() []om.Link {
 		Check(errors.New(r.Status))
 	}
 
-	var glr getLinksResponse
+	var glr om.GetLinksResult
 	body, err := ioutil.ReadAll(r.Body)
 
 	err = json.Unmarshal(body, &glr)
 	Check(err)
-	if glr.Err != "" {
-		Check(errors.New(glr.Err))
-	}
 
-	log.Println("=============")
+	log.Println("======= Links =======")
 	for _, link := range glr.Links {
-		log.Println("title:", link.Title, "url:", link.Url, "status:", link.Status)
+		log.Println(fmt.Sprintf("title: '%s', url: '%s', status: '%s'", link.Title, link.Url, link.Status))
 	}
-
-	return glr.Links
 }
 
 func addLink(url string, title string) {
@@ -62,6 +52,9 @@ func addLink(url string, title string) {
 	params.Add("url", url)
 	params.Add("title", title)
 	qs := params.Encode()
+
+	log.Println("===== Add Link ======")
+	log.Println(fmt.Sprintf("Adding new link - title: '%s', url: '%s'", title, url))
 
 	url = fmt.Sprintf("%s/links?%s", delinkciousUrl, qs)
 	req, err := http.NewRequest("POST", url, nil)
