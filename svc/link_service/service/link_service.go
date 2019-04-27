@@ -121,6 +121,6 @@ func Run() {
 	r.Methods("PUT").Path("/links").Handler(updateLinkHandler)
 	r.Methods("DELETE").Path("/links").Handler(deleteLinkHandler)
 
-	log.Printf("Listening on port %s...\n", port)
+	log.Printf("*** Listening on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
 }
