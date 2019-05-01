@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: g1g1/delinkcious-api-gateway:0.3
+        image: g1g1/delinkcious-api-gateway:0.5
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
