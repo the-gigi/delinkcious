@@ -43,7 +43,10 @@ func getLinks() {
 
 	log.Println("======= Links =======")
 	for _, link := range glr.Links {
-		log.Println(fmt.Sprintf("title: '%s', url: '%s', status: '%s'", link.Title, link.Url, link.Status))
+		log.Println(fmt.Sprintf("title: '%s', url: '%s', status: '%s', description: '%s'", link.Title,
+			link.Url,
+			link.Status,
+			link.Description))
 	}
 }
 
