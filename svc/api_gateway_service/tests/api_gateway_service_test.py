@@ -1,9 +1,8 @@
 import json
+from api_gateway_service.api import create_app
 from unittest import TestCase
 
-from api_gateway_service.api import create_app
-
-base_url = '/v1.0/links'
+base_url = '/v1/links'
 
 
 class APIGatewayServiceTest(TestCase):

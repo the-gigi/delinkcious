@@ -95,7 +95,7 @@ func deleteLink(url string) {
 
 func main() {
 	tempUrl, err := exec.Command("minikube", "service", "api-gateway", "--url").CombinedOutput()
-	delinkciousUrl = string(tempUrl[:len(tempUrl)-1]) + "/v1.0"
+	delinkciousUrl = string(tempUrl[:len(tempUrl)-1]) + "/v1"
 	Check(err)
 
 	// Delete link

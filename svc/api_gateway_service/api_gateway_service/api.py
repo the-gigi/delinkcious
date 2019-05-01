@@ -32,9 +32,9 @@ def create_app():
 
     api = Api(app)
     resource_map = (
-        (Link, '/v1.0/links'),
-        (Followers, '/v1.0/followers'),
-        (Following, '/v1.0/following'),
+        (Link, '/v1/links'),
+        (Followers, '/v1/followers'),
+        (Following, '/v1/following'),
     )
 
     for resource, route in resource_map:
