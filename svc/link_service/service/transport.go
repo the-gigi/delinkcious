@@ -23,7 +23,7 @@ func newLink(source om.Link) link {
 	return link{
 		Url:         source.Url,
 		Title:       source.Title,
-		Description: "[yellow] " + source.Description,
+		Description: source.Description,
 		Status:      source.Status,
 		Tags:        source.Tags,
 		CreatedAt:   source.CreatedAt.Format(time.RFC3339),
