@@ -1,0 +1,18 @@
+# Get all YAML files
+script = """python -c 'from glob import glob; print(",".join(glob("k8s/*.yaml")))'"""
+yaml_files = str(local(script))[:-1]
+yaml_files = yaml_files.split(',')
+for f in yaml_files:
+    k8s_yaml(f)
+
+# Get service name
+script = """python -c 'import os; print("-".join(os.getcwd().split("/")[-1].split("_")[:-1]))'"""
+name = str(local(script))[:-1]
+
+docker_build('g1g1/delinkcious-' + name, '.',
+    live_update=[
+      # when requirements.txt changes, we need to do a full build
+      fall_back_on('requirements.txt'),
+      # Map the local source code into the container under /api_gateway_service
+      sync('.', '/api_gateway_service'),
+])
