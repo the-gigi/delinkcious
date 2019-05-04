@@ -3,4 +3,4 @@ MAINTAINER Gigi Sayfan "the.gigi@gmail.com"
 COPY . /api_gateway_service
 WORKDIR /api_gateway_service
 EXPOSE 5000
-ENTRYPOINT python run.py
+ENTRYPOINT FLASK_DEBUG=1 python run.py
