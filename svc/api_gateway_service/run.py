@@ -1,4 +1,5 @@
 import os
+
 from api_gateway_service.api import app
 
 
