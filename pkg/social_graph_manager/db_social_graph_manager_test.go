@@ -14,7 +14,6 @@ var _ = Describe("social graph manager tests with DB", func() {
 	var err error
 
 	var deleteAll = func() {
-
 		sq.Delete("social_graph").RunWith(socialGraphStore.db).Exec()
 	}
 
@@ -39,7 +38,9 @@ var _ = Describe("social graph manager tests with DB", func() {
 	})
 
 	AfterSuite(func() {
-		deleteAll()
+		if socialGraphStore != nil && socialGraphStore.db != nil {
+			deleteAll()
+		}
 	})
 
 	It("should follow", func() {
