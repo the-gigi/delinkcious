@@ -125,6 +125,18 @@ func makeUnfollowEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 	}
 }
 
+//func wasteCPU() {
+//	fmt.Println("wasteCPU() here!")
+//	go func() {
+//		for {
+//			if rand.Int() % 8000 == 0 {
+//				time.Sleep(50 * time.Microsecond)
+//			}
+//		}
+//	}()
+//}
+
+
 func makeGetFollowingEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(getByUsernameRequest)
@@ -139,6 +151,7 @@ func makeGetFollowingEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 
 func makeGetFollowersEndpoint(svc om.SocialGraphManager) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
+		//wasteCPU()
 		req := request.(getByUsernameRequest)
 		followersMap, err := svc.GetFollowers(req.Username)
 		res := getFollowersResponse{Followers: followersMap}

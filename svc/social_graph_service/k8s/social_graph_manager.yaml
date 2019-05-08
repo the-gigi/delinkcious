@@ -30,6 +30,9 @@ spec:
         - name: mutual-auth
           mountPath: /etc/delinkcious
           readOnly: true
+        resources:
+          requests:
+            cpu: 100m
       volumes:
       - name: mutual-auth
         secret:
