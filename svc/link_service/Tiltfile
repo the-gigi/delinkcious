@@ -11,7 +11,3 @@ script = """import os; print('-'.join(os.getcwd().split("/")[-1].split("_")[:-1]
 name = str(local(script))[:-1]
 
 docker_build('g1g1/delinkcious-' + name, '.', dockerfile='Dockerfile.dev')
-
-
-
-
