@@ -18,6 +18,9 @@ var _ = Describe("social graph manager tests with DB", func() {
 	}
 
 	BeforeSuite(func() {
+		_, err := db_util.RunLocalDB("social_graph_manager")
+		Ω(err).Should(BeNil())
+
 		dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
 		Ω(err).Should(BeNil())
 		socialGraphStore, err = NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
