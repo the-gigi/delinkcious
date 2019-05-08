@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/the-gigi/delinkcious/pkg/db_util"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
+	"log"
 )
 
 var _ = Describe("social graph manager tests with DB", func() {
@@ -18,15 +19,37 @@ var _ = Describe("social graph manager tests with DB", func() {
 	}
 
 	BeforeSuite(func() {
-		db, err := db_util.RunLocalDB("social_graph_manager")
+		var err error
+		dbHost, dbPort, err := db_util.GetDbEndpoint("scoial_graph_manager")
 		Ω(err).Should(BeNil())
-		Ω(db).ShouldNot(BeNil())
 
-		dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
-		Ω(err).Should(BeNil())
 		socialGraphStore, err = NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
+		if err != nil {
+			_, err = db_util.RunLocalDB("postgres")
+			Ω(err).Should(BeNil())
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			socialGraphStore, err = NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
+			Ω(err).Should(BeNil())
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
 		Ω(err).Should(BeNil())
 		Ω(socialGraphStore).ShouldNot(BeNil())
+
+		//db, err := db_util.RunLocalDB("social_graph_manager")
+		//Ω(err).Should(BeNil())
+		//Ω(db).ShouldNot(BeNil())
+		//
+		//dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
+		//Ω(err).Should(BeNil())
+		//socialGraphStore, err = NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
+		//Ω(err).Should(BeNil())
+		//Ω(socialGraphStore).ShouldNot(BeNil())
 
 		socialGraphManager, err = NewSocialGraphManager(socialGraphStore)
 		Ω(err).Should(BeNil())
