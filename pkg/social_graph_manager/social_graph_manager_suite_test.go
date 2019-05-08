@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestLinkManager(t *testing.T) {
+func TestSocialGraphManager(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "SocialGraphManager Suite")
 }

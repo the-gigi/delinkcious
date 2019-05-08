@@ -14,17 +14,21 @@ var _ = Describe("social graph manager tests with DB", func() {
 	var err error
 
 	var deleteAll = func() {
+
 		sq.Delete("social_graph").RunWith(socialGraphStore.db).Exec()
 	}
 
 	BeforeSuite(func() {
-		_, err := db_util.RunLocalDB("social_graph_manager")
+		db, err := db_util.RunLocalDB("social_graph_manager")
 		Ω(err).Should(BeNil())
+		Ω(db).ShouldNot(BeNil())
 
 		dbHost, dbPort, err := db_util.GetDbEndpoint("social_graph")
 		Ω(err).Should(BeNil())
 		socialGraphStore, err = NewDbSocialGraphStore(dbHost, dbPort, "postgres", "postgres")
 		Ω(err).Should(BeNil())
+		Ω(socialGraphStore).ShouldNot(BeNil())
+
 		socialGraphManager, err = NewSocialGraphManager(socialGraphStore)
 		Ω(err).Should(BeNil())
 		Ω(socialGraphManager).ShouldNot(BeNil())

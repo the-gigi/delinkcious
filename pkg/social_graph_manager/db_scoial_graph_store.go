@@ -17,7 +17,7 @@ const dbName = "social_graph_manager"
 
 func NewDbSocialGraphStore(host string, port int, username string, password string) (store *DbSocialGraphStore, err error) {
 	db, err := db_util.EnsureDB(host, port, username, password, dbName)
-	if err != nil {
+	if err != nil || db == nil {
 		return
 	}
 
