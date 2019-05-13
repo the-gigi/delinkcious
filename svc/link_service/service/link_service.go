@@ -89,7 +89,7 @@ func Run() {
 	}
 
 	// Create a logger
-	logger := log.NewLogger()
+	logger := log.NewLogger("link manager")
 
 	// Create the service implementation
 	svc, err := lm.NewLinkManager(store, socialGraphClient, natsUrl, eventSink, maxLinksPerUser)

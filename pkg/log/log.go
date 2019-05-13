@@ -6,9 +6,10 @@ import (
 	"os"
 )
 
-func NewLogger() (logger kit_log.Logger) {
+func NewLogger(service string) (logger kit_log.Logger) {
 	w := kit_log.NewSyncWriter(os.Stderr)
 	logger = kit_log.NewJSONLogger(w)
+	logger = kit_log.With(logger, "service", service)
 	logger = kit_log.With(logger, "timestamp", kit_log.DefaultTimestampUTC)
 	logger = kit_log.With(logger, "called from", kit_log.DefaultCaller)
 
