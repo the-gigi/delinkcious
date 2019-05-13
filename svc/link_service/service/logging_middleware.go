@@ -13,11 +13,9 @@ func newLoggingMiddleware(logger log.Logger) linkManagerMiddleware {
 	}
 }
 
-// Make a new type and wrap into Service interface
-// Add logger property to this type
 type loggingMiddleware struct {
-	linkManager om.LinkManager
-	logger      log.Logger
+	next   om.LinkManager
+	logger log.Logger
 }
 
 func (m loggingMiddleware) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
@@ -29,18 +27,18 @@ func (m loggingMiddleware) GetLinks(request om.GetLinksRequest) (result om.GetLi
 			"duration", time.Since(begin),
 		)
 	}(time.Now())
-	result, err = m.linkManager.GetLinks(request)
+	result, err = m.next.GetLinks(request)
 	return
 }
 
 func (m loggingMiddleware) AddLink(request om.AddLinkRequest) error {
-	return m.linkManager.AddLink(request)
+	return m.next.AddLink(request)
 }
 
 func (m loggingMiddleware) UpdateLink(request om.UpdateLinkRequest) error {
-	return m.linkManager.UpdateLink(request)
+	return m.next.UpdateLink(request)
 }
 
 func (m loggingMiddleware) DeleteLink(username string, url string) error {
-	return m.linkManager.DeleteLink(username, url)
+	return m.next.DeleteLink(username, url)
 }
