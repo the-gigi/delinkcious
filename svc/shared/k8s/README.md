@@ -2,14 +2,14 @@
 
 This directory contains manifests for resources and policies that apply across the cluster
 
-## NATS cluster
-
-This is the only required service. Install it using the following commands:
+Run the bootstrap.sh script:
 
 ```
-$ kubectl apply -f https://github.com/nats-io/nats-operator/releases/download/v0.4.5/00-prereqs.yaml
-$ kubectl apply -f https://github.com/nats-io/nats-operator/releases/download/v0.4.5/10-deployment.yaml
-$ kubectl create -f nats_cluster.yaml
+$ ./bootstrap.sh
 ```
 
+It will do the following:
 
+- Install ArgoCD
+- Add all the Delinkcious services
+- Install NATS
