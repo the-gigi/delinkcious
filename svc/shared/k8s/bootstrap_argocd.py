@@ -51,6 +51,13 @@ def create_app(name, project, namespace, repo, path):
     print(output)
 
 
+def sync_app(name):
+    """ """
+    cmd = f"""app sync {name}"""
+    output = run(cmd)
+    print(output)
+
+
 def main():
     login()
     project = 'default'
@@ -61,6 +68,7 @@ def main():
     for app in 'link social-graph user news api-gateway'.split():
         service = app.replace('-', '_') + '_service'
         create_app(app, project, ns, repo, f'svc/{service}/k8s')
+        sync_app(app)
 
 
 if __name__ == '__main__':
