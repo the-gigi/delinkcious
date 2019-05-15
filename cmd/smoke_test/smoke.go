@@ -12,6 +12,7 @@ import (
 	net_url "net/url"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -97,9 +98,19 @@ func deleteLink(url string) {
 }
 
 func main() {
-	tempUrl, err := exec.Command("minikube", "service", "api-gateway", "--url").CombinedOutput()
-	delinkciousUrl = string(tempUrl[:len(tempUrl)-1]) + "/v1"
+	filter := "jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+	tempUrl, err := exec.Command("kubectl", "get", "svc", "api-gateway", "-o", filter).CombinedOutput()
+
+	if err != nil || string(tempUrl) == "" {
+		tempUrl, err = exec.Command("minikube", "service", "api-gateway", "--url").CombinedOutput()
+	}
 	Check(err)
+	delinkciousUrl = string(tempUrl[:len(tempUrl)-1]) + "/v1"
+	if !strings.HasPrefix(delinkciousUrl, "http") {
+		delinkciousUrl = "http://" + delinkciousUrl[1:]
+	}
+
+	fmt.Printf("url: '%s'\n", delinkciousUrl)
 
 	// Delete link
 	deleteLink("https://github.com/the-gigi")
