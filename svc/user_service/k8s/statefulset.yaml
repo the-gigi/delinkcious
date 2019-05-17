@@ -30,7 +30,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: postgres
         - name: PGDATA
-          value: /data/user-db
+          value: /data/user-db/data
 
         volumeMounts:
         - name: user-db
