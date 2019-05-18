@@ -103,16 +103,17 @@ func Run() {
 	// Hook up the logging middleware to the service and the logger
 	svc = newLoggingMiddleware(logger)(svc)
 
-	requestCounter := metrics.NewCounter("link", "request_count", "total count requests for a service method")
-	if requestCounter == nil {
-		log.Fatal(errors.New("Failed to create request counter"))
+	if os.Getenv("DELINKCIOUS_SKIP_METRICS") != "true" {
+		requestCounter := metrics.NewCounter("link", "request_count", "total count requests for a service method")
+		if requestCounter == nil {
+			log.Fatal(errors.New("Failed to create request counter"))
+		}
+
+		requestSummary := metrics.NewSummary("link", "request_summary", "total duration of requests for a service method")
+
+		// Hook up the metrics middleware
+		svc = newMetricsMiddleware(requestCounter, requestSummary)(svc)
 	}
-
-	requestSummary := metrics.NewSummary("link", "request_count", "total duration of requests for a service method")
-
-	// Hook up the metrics middleware
-	svc = newMetricsMiddleware(requestCounter, requestSummary)(svc)
-
 
 
 	getLinksHandler := httptransport.NewServer(
