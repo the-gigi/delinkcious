@@ -5,6 +5,7 @@ import (
 	"fmt"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/the-gigi/delinkcious/pkg/db_util"
 	lm "github.com/the-gigi/delinkcious/pkg/link_manager"
 	"github.com/the-gigi/delinkcious/pkg/link_manager_events"
@@ -145,6 +146,7 @@ func Run() {
 	r.Methods("POST").Path("/links").Handler(addLinkHandler)
 	r.Methods("PUT").Path("/links").Handler(updateLinkHandler)
 	r.Methods("DELETE").Path("/links").Handler(deleteLinkHandler)
+	r.Methods("GET").Path("/metrics").Handler(promhttp.Handler())
 
 	logger.Log("msg", "*** listening on ***", "port", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
