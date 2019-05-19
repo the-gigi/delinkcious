@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
@@ -11,7 +10,6 @@ import (
 	"github.com/the-gigi/delinkcious/pkg/link_manager_events"
 
 	"github.com/the-gigi/delinkcious/pkg/log"
-	"github.com/the-gigi/delinkcious/pkg/metrics"
 
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
 	sgm "github.com/the-gigi/delinkcious/pkg/social_graph_client"
@@ -105,17 +103,9 @@ func Run() {
 	svc = newLoggingMiddleware(logger)(svc)
 
 	if os.Getenv("DELINKCIOUS_SKIP_METRICS") != "true" {
-		requestCounter := metrics.NewCounter("link", "request_count", "total count requests for a service method")
-		if requestCounter == nil {
-			log.Fatal(errors.New("Failed to create request counter"))
-		}
-
-		requestSummary := metrics.NewSummary("link", "request_summary", "total duration of requests for a service method")
-
 		// Hook up the metrics middleware
-		svc = newMetricsMiddleware(requestCounter, requestSummary)(svc)
+		svc = newMetricsMiddleware()(svc)
 	}
-
 
 	getLinksHandler := httptransport.NewServer(
 		makeGetLinksEndpoint(svc),

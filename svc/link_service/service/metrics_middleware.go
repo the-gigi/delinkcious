@@ -1,28 +1,40 @@
 package service
 
 import (
-	"github.com/go-kit/kit/metrics"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/the-gigi/delinkcious/pkg/metrics"
 	om "github.com/the-gigi/delinkcious/pkg/object_model"
+	"strings"
 	"time"
 )
 
+
 // implement function to return ServiceMiddleware
-func newMetricsMiddleware(requestCounter metrics.Counter, requestLatency metrics.Histogram) linkManagerMiddleware {
+func newMetricsMiddleware() linkManagerMiddleware {
 	return func(next om.LinkManager) om.LinkManager {
-		return metricsMiddleware{next, requestCounter, requestLatency}
+		m := metricsMiddleware{next,
+			map[string]prometheus.Counter{},
+			map[string]prometheus.Summary{}}
+		methodNames := []string{"GetLinks", "AddLink", "UpdateLink", "DeleteLink"}
+		for _, name := range methodNames {
+			m.requestCounter[name] = metrics.NewCounter("link", strings.ToLower(name), "count # of requests")
+			m.requestLatency[name] = metrics.NewSummary("link", strings.ToLower(name), "request summary in milliseconds")
+
+		}
+		return m
 	}
 }
 
 type metricsMiddleware struct {
 	next           om.LinkManager
-	requestCounter metrics.Counter
-	requestLatency metrics.Histogram
+	requestCounter map[string]prometheus.Counter
+	requestLatency map[string]prometheus.Summary
 }
 
-func (m metricsMiddleware) recordMetrics(methodName string, begin time.Time) {
-	m.requestCounter.With("method", methodName).Add(1)
-	durationMilliseconds := float64(time.Since(begin).Nanoseconds() * 1000)
-	m.requestLatency.With("method", methodName).Observe(durationMilliseconds)
+func (m metricsMiddleware) recordMetrics(name string, begin time.Time) {
+	m.requestCounter[name].Inc()
+	durationMilliseconds := float64(time.Since(begin).Nanoseconds() * 1000000)
+	m.requestLatency[name].Observe(durationMilliseconds)
 }
 
 func (m metricsMiddleware) GetLinks(request om.GetLinksRequest) (result om.GetLinksResult, err error) {
