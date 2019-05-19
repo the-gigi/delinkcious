@@ -17,8 +17,8 @@ func newMetricsMiddleware() linkManagerMiddleware {
 			map[string]prometheus.Summary{}}
 		methodNames := []string{"GetLinks", "AddLink", "UpdateLink", "DeleteLink"}
 		for _, name := range methodNames {
-			m.requestCounter[name] = metrics.NewCounter("link", strings.ToLower(name), "count # of requests")
-			m.requestLatency[name] = metrics.NewSummary("link", strings.ToLower(name), "request summary in milliseconds")
+			m.requestCounter[name] = metrics.NewCounter("link", strings.ToLower(name)+"_count", "count # of requests")
+			m.requestLatency[name] = metrics.NewSummary("link", strings.ToLower(name)+"_summary", "request summary in milliseconds")
 
 		}
 		return m

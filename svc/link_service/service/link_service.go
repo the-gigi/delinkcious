@@ -102,10 +102,8 @@ func Run() {
 	// Hook up the logging middleware to the service and the logger
 	svc = newLoggingMiddleware(logger)(svc)
 
-	if os.Getenv("DELINKCIOUS_SKIP_METRICS") != "true" {
-		// Hook up the metrics middleware
-		svc = newMetricsMiddleware()(svc)
-	}
+	// Hook up the metrics middleware
+	svc = newMetricsMiddleware()(svc)
 
 	getLinksHandler := httptransport.NewServer(
 		makeGetLinksEndpoint(svc),
