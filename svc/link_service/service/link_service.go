@@ -9,10 +9,10 @@ import (
 
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/jaegertracing/jaeger-client-go"
-	jeagerconfig "github.com/jaegertracing/jaeger-client-go/config"
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/uber/jaeger-client-go"
+	jeagerconfig "github.com/uber/jaeger-client-go/config"
 
 	"github.com/the-gigi/delinkcious/pkg/db_util"
 	lm "github.com/the-gigi/delinkcious/pkg/link_manager"

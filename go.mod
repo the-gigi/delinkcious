@@ -9,7 +9,6 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/mux v1.7.0
-	github.com/jaegertracing/jaeger-client-go v2.16.0+incompatible
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
@@ -27,8 +26,10 @@ require (
 	github.com/pelletier/go-toml v1.2.0
 	github.com/prometheus/client_golang v0.9.3
 	github.com/stretchr/testify v1.3.0 // indirect
-	github.com/uber/jaeger-client-go v2.16.0+incompatible // indirect
+	github.com/uber-go/atomic v1.4.0 // indirect
+	github.com/uber/jaeger-client-go v2.16.0+incompatible
 	github.com/uber/jaeger-lib v2.0.0+incompatible // indirect
+	go.uber.org/atomic v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
 	golang.org/x/net v0.0.0-20190514140710-3ec191127204
 	golang.org/x/sys v0.0.0-20190515190549-87c872767d25 // indirect
