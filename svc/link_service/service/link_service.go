@@ -2,24 +2,24 @@ package service
 
 import (
 	"fmt"
-	httptransport "github.com/go-kit/kit/transport/http"
-	"github.com/gorilla/mux"
-	"github.com/opentracing/opentracing-go"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/the-gigi/delinkcious/pkg/db_util"
-	lm "github.com/the-gigi/delinkcious/pkg/link_manager"
-	"github.com/the-gigi/delinkcious/pkg/link_manager_events"
 	"io"
-
-	"github.com/the-gigi/delinkcious/pkg/log"
-
-	"github.com/jaegertracing/jaeger-client-go"
-	"github.com/jaegertracing/jaeger-client-go/config"
-	om "github.com/the-gigi/delinkcious/pkg/object_model"
-	sgm "github.com/the-gigi/delinkcious/pkg/social_graph_client"
 	"net/http"
 	"os"
 	"strconv"
+
+	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/gorilla/mux"
+	"github.com/jaegertracing/jaeger-client-go"
+	jeagerconfig "github.com/jaegertracing/jaeger-client-go/config"
+	"github.com/opentracing/opentracing-go"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"github.com/the-gigi/delinkcious/pkg/db_util"
+	lm "github.com/the-gigi/delinkcious/pkg/link_manager"
+	"github.com/the-gigi/delinkcious/pkg/link_manager_events"
+	"github.com/the-gigi/delinkcious/pkg/log"
+	om "github.com/the-gigi/delinkcious/pkg/object_model"
+	sgm "github.com/the-gigi/delinkcious/pkg/social_graph_client"
 )
 
 type EventSink struct {
@@ -41,17 +41,17 @@ func (s *EventSink) OnLinkDeleted(username string, url string) {
 
 // initJaeger returns an instance of Jaeger Tracer that samples 100% of traces and logs all spans to stdout.
 func initJaeger(service string) (opentracing.Tracer, io.Closer) {
-	cfg := &config.Configuration{
+	cfg := &jeagerconfig.Configuration{
 		ServiceName: service,
-		Sampler: &config.SamplerConfig{
+		Sampler: &jeagerconfig.SamplerConfig{
 			Type:  "const",
 			Param: 1,
 		},
-		Reporter: &config.ReporterConfig{
+		Reporter: &jeagerconfig.ReporterConfig{
 			LogSpans: true,
 		},
 	}
-	logger := config.Logger(jaeger.StdLogger)
+	logger := jeagerconfig.Logger(jaeger.StdLogger)
 	tracer, closer, err := cfg.NewTracer(logger)
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: cannot init Jaeger: %v\n", err))
@@ -118,7 +118,8 @@ func Run() {
 	logger := log.NewLogger("link manager")
 
 	// Create a tracer
-	tracer := opentracing.GlobalTracer()
+	tracer, closer := initJaeger("link-manager")
+	defer closer.Close()
 
 	// Create the service implementation
 	svc, err := lm.NewLinkManager(store, socialGraphClient, natsUrl, eventSink, maxLinksPerUser)
