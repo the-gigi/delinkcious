@@ -18,8 +18,8 @@ set -euxo pipefail
 #   I N S T A L L   H E L M
 #
 ################################
-#kubectl apply -f helm_rbac.yaml
-#helm init --service-account tiller
+kubectl apply -f helm_rbac.yaml
+helm init --service-account tiller
 
 ###############################################
 #

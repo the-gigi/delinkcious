@@ -39,8 +39,9 @@ func (s *EventSink) OnLinkDeleted(username string, url string) {
 	//log.Println("Link deleted")
 }
 
-// initJaeger returns an instance of Jaeger Tracer that samples 100% of traces and logs all spans to stdout.
-func initJaeger(service string) (opentracing.Tracer, io.Closer) {
+// createTracer returns an instance of Jaeger Tracer that samples
+// 100% of traces and logs all spans to stdout.
+func createTracer(service string) (opentracing.Tracer, io.Closer) {
 	cfg := &jeagerconfig.Configuration{
 		ServiceName: service,
 		Sampler: &jeagerconfig.SamplerConfig{
@@ -54,7 +55,7 @@ func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 	logger := jeagerconfig.Logger(jaeger.StdLogger)
 	tracer, closer, err := cfg.NewTracer(logger)
 	if err != nil {
-		panic(fmt.Sprintf("ERROR: cannot init Jaeger: %v\n", err))
+		panic(fmt.Sprintf("ERROR: cannot create tracer: %v\n", err))
 	}
 	return tracer, closer
 }
@@ -118,7 +119,7 @@ func Run() {
 	logger := log.NewLogger("link manager")
 
 	// Create a tracer
-	tracer, closer := initJaeger("link-manager")
+	tracer, closer := createTracer("link-manager")
 	defer closer.Close()
 
 	// Create the service implementation
