@@ -98,22 +98,40 @@ func deleteLink(url string) {
 }
 
 func main() {
-	fmt.Println("Guessing running on EKS")
-	filter := "jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
-	tempUrl, err := exec.Command("kubectl", "get", "svc", "api-gateway", "-o", filter).CombinedOutput()
-	if err != nil || string(tempUrl) == "" || string(tempUrl) == "''" {
-		fmt.Println("Guessing running on minikube")
+	result, err := exec.Command("kubectl", "config", "current-context").CombinedOutput()
+	Check(err)
+	currContext := string(result[:len(result)-1])
+	fmt.Println("Checking which platform the cluster is running on... kubectl context:", currContext)
+
+	var tempUrl []byte
+	if strings.HasPrefix(currContext, "minikube") {
 		tempUrl, err = exec.Command("minikube", "service", "api-gateway", "--url").CombinedOutput()
+		Check(err)
+		fmt.Println("Running on minikube")
+	} else if strings.HasPrefix(currContext, "gke") {
+		filter := "jsonpath='{.status.loadBalancer.ingress[0].ip}'"
+		tempUrl, err = exec.Command("kubectl", "get", "svc", "api-gateway",
+			"-o", filter).CombinedOutput()
+		Check(err)
+		fmt.Println("Running on GKE")
+
+	} else if strings.HasSuffix(currContext, "eksctl.io") {
+		filter := "jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+		tempUrl, err = exec.Command("kubectl", "get", "svc", "api-gateway", "-o", filter).CombinedOutput()
+		Check(err)
+		fmt.Println("Running on AWS")
+
 	}
 
-	if err != nil {
-		fmt.Println("Guessing running on KIND")
-		go func() {
-			exec.Command("kubectl", "port-forward", "svc/api-gateway", "5000:80")
-		}()
-		time.Sleep(time.Second * 3)
-		tempUrl = []byte("http://localhost:5000/")
-	}
+	//if err != nil {
+	//	fmt.Println("Guessing running on KIND")
+	//	go func() {
+	//		exec.Command("kubectl", "port-forward", "svc/api-gateway", "5000:80")
+	//	}()
+	//	time.Sleep(time.Second * 3)
+	//	tempUrl = []byte("http://localhost:5000/")
+	//}
+
 
 	delinkciousUrl = string(tempUrl[:len(tempUrl)-1]) + "/v1"
 	if !strings.HasPrefix(delinkciousUrl, "http") {
