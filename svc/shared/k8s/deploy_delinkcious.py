@@ -58,7 +58,7 @@ def sync_app(name):
     print(output)
 
 
-def main():
+def deploy_delinkcious_services():
     login()
     project = 'default'
     ns = 'default'
@@ -72,4 +72,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    deploy_delinkcious()
