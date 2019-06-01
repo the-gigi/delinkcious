@@ -51,6 +51,28 @@ func getLinks() {
 	}
 }
 
+func getFollowing() {
+	req, err := http.NewRequest("GET", string(delinkciousUrl)+"/following", nil)
+	Check(err)
+
+	req.Header.Add("Access-Token", delinkciousToken)
+	r, err := httpClient.Do(req)
+	Check(err)
+
+	defer r.Body.Close()
+
+	if r.StatusCode != http.StatusOK {
+		Check(errors.New(r.Status))
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	Check(err)
+
+	log.Println("======= Following =======")
+	log.Println(string(body))
+}
+
+
 func addLink(url string, title string) {
 	params := net_url.Values{}
 	params.Add("url", url)
@@ -139,6 +161,9 @@ func main() {
 	}
 
 	fmt.Printf("url: '%s'\n", delinkciousUrl)
+
+	// Get following
+	getFollowing()
 
 	// Delete link
 	deleteLink("https://github.com/the-gigi")
