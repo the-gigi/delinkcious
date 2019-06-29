@@ -13,6 +13,7 @@ def guess_platform():
     """Guess which platform the cluster is running on
     - minikube
     - kind
+    - k3s
     - EKS
     - GKE
     """
@@ -26,6 +27,8 @@ def guess_platform():
         return 'eks'
     if name.startswith('kind'):
         return 'kind'
+    if 'k3' in name:
+        return 'k3s'
 
     raise RuntimeError('Unknown platform for cluster: ' + name)
 
@@ -101,16 +104,16 @@ def install_argocd():
 
 
 def install_nuclio():
-    # # Install nuclio in its own namespace
-    # run('kubectl create namespace nuclio')
-    #
-    # run('kubectl apply -f https://raw.githubusercontent.com/nuclio/nuclio/master/hack/k8s/resources/nuclio-rbac.yaml')
-    # run('kubectl apply -f https://raw.githubusercontent.com/nuclio/nuclio/master/hack/k8s/resources/nuclio.yaml')
-    #
-    # ## Get nuctl CLI and create a symlink
-    # ver = '1.1.5'
-    # path = f'nuctl-{ver}-darwin-amd64'
-    # run(f'curl -LO https://github.com/nuclio/nuclio/releases/download/{ver}/{path}')
+    # Install nuclio in its own namespace
+    run('kubectl create namespace nuclio')
+
+    run('kubectl apply -f https://raw.githubusercontent.com/nuclio/nuclio/master/hack/k8s/resources/nuclio-rbac.yaml')
+    run('kubectl apply -f https://raw.githubusercontent.com/nuclio/nuclio/master/hack/k8s/resources/nuclio.yaml')
+
+    ## Get nuctl CLI and create a symlink
+    ver = '1.1.5'
+    path = f'nuctl-{ver}-darwin-amd64'
+    run(f'curl -LO https://github.com/nuclio/nuclio/releases/download/{ver}/{path}')
     run(f'sudo mv {path} /usr/local/bin/nuctl')
     run('chmod +x /usr/local/bin/nuctl')
 
@@ -231,7 +234,7 @@ def main():
         # install_helm,
         # install_nats,
         # install_argocd,
-        # deploy_delinkcious_services
+        deploy_delinkcious_services,
     )
 
     platform_components = dict(
@@ -240,6 +243,12 @@ def main():
             install_nuclio,
             deploy_link_checker),
         kind=(
+            install_nuclio,
+            install_metrics_server,
+            deploy_link_checker,
+            install_prometheus
+        ),
+        k3s=(
             install_nuclio,
             install_metrics_server,
             deploy_link_checker,
