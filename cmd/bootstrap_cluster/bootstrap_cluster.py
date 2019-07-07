@@ -46,7 +46,7 @@ def run(cmd, echo=True):
 def enable_minikube_addons():
     """ """
     addons = 'ingress heapster efk metrics-server'.split()
-    for addons in addons:
+    for addon in addons:
         run('minikube addons enable ' + addon)
 
 
@@ -65,8 +65,8 @@ def install_metrics_server():
 
 def install_nats():
     """ """
-    run('kubectl apply -f https://github.com/nats-io/nats-operator/releases/download/v0.4.5/00-prereqs.yaml')
-    run('kubectl apply -f https://github.com/nats-io/nats-operator/releases/download/v0.4.5/10-deployment.yaml')
+    run('kubectl apply -f https://github.com/nats-io/nats-operator/releases/download/latest/00-prereqs.yaml')
+    run('kubectl apply -f https://github.com/nats-io/nats-operator/releases/download/latest/10-deployment.yaml')
 
     time.sleep(3)
     run('kubectl apply -f nats_cluster.yaml')
@@ -132,7 +132,7 @@ def deploy_link_checker():
     """ Deploy the link checker nuclio function"""
     orig_dir = os.getcwd()
     os.chdir('../../fun/link_checker')
-    registry = 'gcr.io' if gke else 'g1g1'
+    registry = 'gcr.io' if platform == 'gke' else 'g1g1'
     run('nuctl deploy link-checker -n nuclio -p . --registry g1g1')
     os.chdir(orig_dir)
 
@@ -231,9 +231,9 @@ def install_jeager():
 def main():
     """Check the active cluster's platform and install components accordingly"""
     common_components = (
-        # install_helm,
-        # install_nats,
-        # install_argocd,
+        install_helm,
+        install_nats,
+        install_argocd,
         deploy_delinkcious_services,
     )
 
@@ -241,7 +241,8 @@ def main():
         minikube=(
             enable_minikube_addons,
             install_nuclio,
-            deploy_link_checker),
+            # deploy_link_checker,
+        ),
         kind=(
             install_nuclio,
             install_metrics_server,
@@ -251,12 +252,12 @@ def main():
         k3s=(
             install_nuclio,
             install_metrics_server,
-            deploy_link_checker,
+            #deploy_link_checker,
             install_prometheus
         ),
         gke=(
             install_nuclio,
-            deploy_link_checker,
+            #deploy_link_checker,
             install_prometheus
         ),
         aws=(
@@ -267,6 +268,7 @@ def main():
     global platform
     platform = guess_platform()
     components = chain.from_iterable((common_components, platform_components[platform]))
+    components = platform_components[platform]
     for install_component in components:
         install_component()
 
