@@ -1,7 +1,8 @@
 # Delinkcious
 
-A delicious-like link management platform implemented using Go microservices
+A delicious-like link management platform implemented using Go microservices and deployed on Kubernetes.
 
+The book [Hands-on Microservices with Kubernetes](https://www.amazon.com/Hands-Microservices-Kubernetes-scalable-microservices/dp/1789805465) describes how it was built from scratch.
 
 # Directory Structure
 
@@ -10,7 +11,7 @@ The core logic is implemented by libraries in this directory
 
 ## svc
 
-The microservices are in this directory. They use the excellent [gokit](https://gokit.io) microservice framework.
+The microservices are in this directory. They use the excellent [go-kit](https://gokit.io) microservice framework.
 
 ## cmd
 
