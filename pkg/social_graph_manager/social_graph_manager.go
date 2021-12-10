@@ -42,7 +42,7 @@ func (m *SocialGraphManager) GetFollowing(username string) (map[string]bool, err
 func (m *SocialGraphManager) GetFollowers(username string) (result map[string]bool, err error) {
 	result, err = m.store.GetFollowers(username)
 	if err != nil {
-		log.Printf("Error in GetFollowers(), %v\n", err)
+		log.Printf("LastError in GetFollowers(), %v\n", err)
 	}
 	return
 }
