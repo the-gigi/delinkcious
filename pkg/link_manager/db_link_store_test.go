@@ -37,6 +37,7 @@ var _ = Describe("DB link store tests", func() {
 
 		Ω(err).Should(BeNil())
 		Ω(linkStore).ShouldNot(BeNil())
+		Ω(linkStore.db).ShouldNot(BeNil())
 	})
 
 	BeforeEach(deleteAll)
