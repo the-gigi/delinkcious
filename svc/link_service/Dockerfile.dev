@@ -6,6 +6,9 @@ WORKDIR /go/src/github.com/the-gigi/delinkcious/svc/link_service
 ADD ./main.go main.go
 ADD ./service service
 
+# Update
+RUN apt-get --allow-releaseinfo-change update && apt upgrade -y
+
 # Fetch dependencies
 RUN go get -d -v
 

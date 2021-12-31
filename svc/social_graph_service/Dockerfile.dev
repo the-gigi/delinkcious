@@ -5,6 +5,9 @@ RUN go get github.com/the-gigi/delinkcious/...
 WORKDIR /go/src/github.com/the-gigi/delinkcious/svc/social_graph_service
 ADD ./main.go main.go
 
+# Update
+RUN apt-get --allow-releaseinfo-change update && apt upgrade -y
+
 # Fetch dependencies
 RUN go get -d -v
 

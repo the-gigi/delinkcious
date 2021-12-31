@@ -3,13 +3,13 @@
 set -eo pipefail
 
 IMAGE_PREFIX='g1g1'
-STABLE_TAG='0.6'
+STABLE_TAG='0.7'
 
 TAG="${STABLE_TAG}.${CIRCLE_BUILD_NUM}"
 ROOT_DIR="$(pwd)"
 SVC_DIR="${ROOT_DIR}/svc"
 cd $SVC_DIR
-docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
 for svc in *; do
     cd "${SVC_DIR}/$svc"
     if [[ ! -f Dockerfile ]]; then

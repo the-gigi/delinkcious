@@ -1,7 +1,7 @@
 package link_manager_events
 
 import (
-	"github.com/nats-io/go-nats"
+	"github.com/nats-io/nats.go"
 )
 
 const (
