@@ -9,9 +9,10 @@ def run(cmd):
 
 
 def login():
-    host = 'localhost:8080'
-    password = os.environ['ARGOCD_PASSWORD']
-    cmd = f'login {host} --insecure --username admin --password {password}'
+    # host = 'localhost:8080'
+    # password = os.environ['ARGOCD_PASSWORD']
+    # cmd = f'login {host} --insecure --username admin --password {password}'
+    cmd = 'argocd login --core'
     output = run(cmd)
     print(output)
 
@@ -72,4 +73,4 @@ def deploy_delinkcious_services():
 
 
 if __name__ == '__main__':
-    deploy_delinkcious()
+    deploy_delinkcious_services()

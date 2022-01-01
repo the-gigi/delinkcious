@@ -1,3 +1,8 @@
+"""Bootstrap the Delinkcious Kubernetes cluster
+
+
+"""
+
 import json
 import os
 import subprocess
@@ -9,6 +14,31 @@ from multiprocessing import Process
 platform = None
 
 
+def verify_requirements():
+    """Make sure requirements are present
+
+    - kubectl (1.20+)
+    - helm3   (version 3)
+    - argocd CLI
+    """
+
+    result = json.loads(run('kubectl version -o json'))
+    minorClientVersion = int(result['clientVersion']['minor'])
+    minorServerVersion = int(result['serverVersion']['minor'])
+    if minorClientVersion < 20:
+        raise RuntimeError('kubectl version >= 1.20 is required. See https://kubernetes.io/docs/tasks/tools/')
+    if minorServerVersion < 20:
+        raise RuntimeError('Kubernetes master version must be >= 1.20.')
+
+    result = run('helm version')
+    result = result.split('Version:"')[1]
+    if not result.startswith('v3'):
+        raise RuntimeError('Helm version 3 is required. See https://helm.sh/docs/intro/install')
+
+    result = run('which argocd')
+    if not result.contains('not found'):
+        raise RuntimeError('argocd CLI is required. See https://github.com/argoproj/argo-cd/blob/master/docs/cli_installation.md')
+
 def guess_platform():
     """Guess which platform the cluster is running on
     - minikube
@@ -16,11 +46,14 @@ def guess_platform():
     - k3s
     - EKS
     - GKE
+    - AKS
     """
     cfg = json.loads(run('kubectl config view -o json', echo=False))
     name = cfg['clusters'][0]['name']
     if name.startswith('gke'):
         return 'gke'
+    if name.startswith('aks'):
+        return 'aks'
     if name.startswith('minikube'):
         return 'minikube'
     if name.startswith('eksctl.io'):
@@ -50,32 +83,28 @@ def enable_minikube_addons():
         run('minikube addons enable ' + addon)
 
 
-def install_helm():
-    """ """
-    run('kubectl apply -f helm_rbac.yaml')
-    run('helm init --service-account tiller')
-
-
 def install_metrics_server():
-    run("""helm install 'stable/metrics-server 
-             --name metrics-server
-             --version 2.0.4
-             --namespace monitoring""")
+    run('helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/')
+    run("""helm upgrade --install 
+           metrics-server 
+           metrics-server/metrics-server 
+           --version 2.0.4
+           --namespace monitoring""")
 
 
 def install_nats():
     """ """
-    run('kubectl apply -f https://github.com/nats-io/nats-operator/releases/download/latest/00-prereqs.yaml')
-    run('kubectl apply -f https://github.com/nats-io/nats-operator/releases/download/latest/10-deployment.yaml')
-
-    time.sleep(3)
-    run('kubectl apply -f nats_cluster.yaml')
+    run('helm repo add nats https://nats-io.github.io/k8s/helm/charts/')
+    run('helm repo update')
+    run('helm install nats-server nats/nats')
 
 
 def install_argocd():
     """ """
-    run('kubectl create namespace argocd')
-    run('kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml')
+    result = run('kubectl get namespace argocd -o name')
+    if result != 'namespace/argocd':
+        run('kubectl create  namespace argocd')
+        run('kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml')
 
     # Initial password is the ArgoCD server pod id
     get_pod_name = 'kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name'
@@ -90,17 +119,6 @@ def install_argocd():
     while phase != "'Running'":
         phase = run(get_phase)
         time.sleep(1)
-
-    # Port-forward to access the Argo CD server locally on port 8080:
-    argocd_port_forward()
-
-    # Login and update password
-    curr_password = argocd_podname.split('/')[1]
-    if curr_password[-1] == '\n':
-        curr_password = curr_password[:-1]
-    run(f'argocd login :8080 --insecure --username admin --password {curr_password}')
-    new_password = os.environ['ARGOCD_PASSWORD']
-    run(f'argocd account update-password --current-password {curr_password} --new-password {new_password}')
 
 
 def install_nuclio():
@@ -138,16 +156,21 @@ def deploy_link_checker():
 
 
 def argocd_login():
-    host = 'localhost:8080'
-    password = os.environ['ARGOCD_PASSWORD']
-    cmd = f'argocd login {host} --insecure --username admin --password {password}'
+    # Port-forward to access the Argo CD server locally on port 8080:
+    argocd_port_forward()
+
+    cmd = 'argocd login --core'
     output = run(cmd)
     print(output)
 
 
-def argocd_port_forward():
+def argocd_prot_forward_target():
     port_forward = 'kubectl port-forward -n argocd svc/argocd-server 8080:443'
-    p = Process(target=lambda: run(port_forward))
+    run(port_forward)
+
+
+def argocd_port_forward():
+    p = Process(target=argocd_prot_forward_target)
     p.start()
     time.sleep(3)
 
@@ -204,7 +227,9 @@ def deploy_delinkcious_services():
     description = 'Delicious-like link management system'
     repo = 'https://github.com/the-gigi/delinkcious'
     # create_project(project, 'https://kubernetes.default.svc', ns, '', repo)
-    for app in 'link social-graph user news api-gateway'.split():
+    apps = 'link social-graph user news api-gateway'.split()
+    apps = ['api-gateway']
+    for app in apps:
         service = app.replace('-', '_') + '_service'
         create_app(app, project, ns, repo, f'svc/{service}/k8s')
         sync_app(app)
@@ -215,7 +240,9 @@ def install_prometheus():
 
     Don't mess with the operator
     """
-    run('helm install --name prometheus stable/prometheus')
+    run('helm repo add prometheus-community https://prometheus-community.github.io/helm-charts')
+    run('helm repo update')
+    run('helm install --generate-name prometheus-community/kube-prometheus-stack')
 
 
 def install_jeager():
@@ -231,9 +258,8 @@ def install_jeager():
 def main():
     """Check the active cluster's platform and install components accordingly"""
     common_components = (
-        install_helm,
-        install_nats,
-        install_argocd,
+        #install_nats,
+        #install_argocd,
         deploy_delinkcious_services,
     )
 
@@ -247,29 +273,37 @@ def main():
             install_nuclio,
             install_metrics_server,
             deploy_link_checker,
-            install_prometheus
+            install_prometheus,
         ),
         k3s=(
             install_nuclio,
-            install_metrics_server,
-            #deploy_link_checker,
-            install_prometheus
+            # install_metrics_server,
+            # deploy_link_checker,
+            # install_prometheus,
         ),
         gke=(
             install_nuclio,
-            #deploy_link_checker,
-            install_prometheus
+            # deploy_link_checker,
+            install_prometheus,
+        ),
+        aks=(
+            # install_nuclio,
+            # deploy_link_checker,
+            install_prometheus,
         ),
         aws=(
-            install_prometheus
+            install_prometheus,
         )
     )
+
+    # verify_requirements()
 
     global platform
     platform = guess_platform()
     components = chain.from_iterable((common_components, platform_components[platform]))
-    components = platform_components[platform]
+    # components = platform_components[platform]
     for install_component in components:
+        print(install_component.__name__)
         install_component()
 
 
