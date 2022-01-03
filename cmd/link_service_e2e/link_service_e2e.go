@@ -41,9 +41,9 @@ func runSocialGraphService(ctx context.Context) {
 }
 
 func main() {
-	// Turn on authentication
-	err := os.Setenv("DELINKCIOUS_MUTUAL_AUTH", "true")
-	Check(err)
+	//// Turn on authentication
+	//err := os.Setenv("DELINKCIOUS_MUTUAL_AUTH", "true")
+	//Check(err)
 
 	initDB()
 

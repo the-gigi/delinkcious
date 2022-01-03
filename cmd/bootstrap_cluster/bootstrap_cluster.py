@@ -1,10 +1,44 @@
 """Bootstrap the Delinkcious Kubernetes cluster
 
 
+Pre-requisites:
+
+```
+pip install sh
+```
+
+Usage:
+
+Make sure you have a minikube cluster with version >= 1.20 up and running
+
+```
+minikube start
+```
+
+Then:
+
+```
+python ./bootstrap_cluster.py
+```
+
+After installation:
+
+```
+kubectl port-forward -n argocd svc/argocd-server 8080:443
+```
+
+Then browse to localhost:8080 to connect to the ArgoCD server
+
+The username is `admin`
+Use the following command to get the password:
+```
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 --decode
+```
 """
 
 import json
 import os
+import sh
 import subprocess
 import time
 from getpass import getpass
@@ -66,6 +100,26 @@ def guess_platform():
     raise RuntimeError('Unknown platform for cluster: ' + name)
 
 
+def kg(args, output='json'):
+        """Get all resources of the specific kind
+
+        If namespace is not provided get all resources in all namespaces
+
+        Return the result as a Python object (parsed JSON)
+        """
+        args = args.split() + ['-o', output]
+        result = sh.kubectl.get(*args)
+        decoded = str(result.stdout, 'utf-8')
+        if output == 'json':
+            result = json.loads(decoded)
+        else:
+            result = decoded
+            if result.endswith('\n'):
+                result = result[:-1]
+
+        return result
+
+
 def run(cmd, echo=True):
     output = subprocess.check_output(cmd.split()).decode('utf-8')
     if output and output[-1] == '\n':
@@ -78,7 +132,7 @@ def run(cmd, echo=True):
 
 def enable_minikube_addons():
     """ """
-    addons = 'ingress heapster efk metrics-server'.split()
+    addons = 'ingress efk metrics-server'.split()
     for addon in addons:
         run('minikube addons enable ' + addon)
 
@@ -96,15 +150,18 @@ def install_nats():
     """ """
     run('helm repo add nats https://nats-io.github.io/k8s/helm/charts/')
     run('helm repo update')
-    run('helm install nats-server nats/nats')
+    run('helm upgrade --install nats-server nats/nats')
 
 
 def install_argocd():
     """ """
-    result = run('kubectl get namespace argocd -o name')
+    try:
+        result = kg('namespace argocd', output='name')
+    except Exception as e:
+        result = e.stderr.decode('utf-8')
     if result != 'namespace/argocd':
         run('kubectl create  namespace argocd')
-        run('kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml')
+        run('kubectl create -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml')
 
     # Initial password is the ArgoCD server pod id
     get_pod_name = 'kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name'
@@ -228,7 +285,7 @@ def deploy_delinkcious_services():
     repo = 'https://github.com/the-gigi/delinkcious'
     # create_project(project, 'https://kubernetes.default.svc', ns, '', repo)
     apps = 'link social-graph user news api-gateway'.split()
-    apps = ['api-gateway']
+    #apps = ['api-gateway']
     for app in apps:
         service = app.replace('-', '_') + '_service'
         create_app(app, project, ns, repo, f'svc/{service}/k8s')
@@ -258,8 +315,8 @@ def install_jeager():
 def main():
     """Check the active cluster's platform and install components accordingly"""
     common_components = (
-        #install_nats,
-        #install_argocd,
+        install_nats,
+        install_argocd,
         deploy_delinkcious_services,
     )
 
@@ -267,7 +324,7 @@ def main():
         minikube=(
             enable_minikube_addons,
             install_nuclio,
-            # deploy_link_checker,
+            #deploy_link_checker,
         ),
         kind=(
             install_nuclio,
@@ -303,7 +360,7 @@ def main():
     components = chain.from_iterable((common_components, platform_components[platform]))
     # components = platform_components[platform]
     for install_component in components:
-        print(install_component.__name__)
+        print(f'running {install_component.__name__}()...')
         install_component()
 
 

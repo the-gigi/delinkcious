@@ -90,7 +90,7 @@ func Run() {
 		maxLinksPerUserStr = "10"
 	}
 
-	maxLinksPerUser, err := strconv.ParseInt(os.Getenv("MAX_LINKS_PER_USER"), 10, 64)
+	maxLinksPerUser, err := strconv.ParseInt(maxLinksPerUserStr, 10, 64)
 	if err != nil {
 		log.Fatal(err)
 	}
