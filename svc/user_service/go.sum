@@ -24,9 +24,9 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1w=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
-github.com/the-gigi/delinkcious v0.0.0-20220101010726-d6672a76d188 h1:ell5Ci8WxrbmS4tKZ3PdU7Is5Fv6n7/zrnmp1vGlUdE=
-github.com/the-gigi/delinkcious v0.0.0-20220101010726-d6672a76d188/go.mod h1:4zBCgaSywwYqHr/UC02vMZuUZuOW/CzsFrQxeVLzmmA=
-golang.org/x/net v0.0.0-20210917221730-978cfadd31cf h1:R150MpwJIv1MpS0N/pc+NhTM8ajzvlmxlY5OYsrevXQ=
+github.com/the-gigi/delinkcious v0.0.0-20220103094143-701d7f6061e1 h1:V1q2i2jugcFDvEZSn+InZdHMGrkTk5tKS02T5Tz/EA0=
+github.com/the-gigi/delinkcious v0.0.0-20220103094143-701d7f6061e1/go.mod h1:kpqeByJZ8A+IXjeHd7LZhWJUvs8vMf/qNV1tzFAc7us=
+golang.org/x/net v0.0.0-20211216030914-fe4d6282115f h1:hEYJvxw1lSnWIl8X9ofsYMklzaDs90JI2az5YMd4fPM=
 golang.org/x/sys v0.0.0-20210917161153-d61c044b1678 h1:J27LZFQBFoihqXoegpscI10HpjZ7B5WQLLKL2FZXQKw=
 golang.org/x/text v0.3.7 h1:olpwvP2KacW1ZWvsR7uQhoyTYvKAupfQrRGBFM352Gk=
 gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 h1:uRGJdciOHaEIrze2W8Q3AKkepLTh2hOroT7a+7czfdQ=
