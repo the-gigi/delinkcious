@@ -2,12 +2,16 @@ package test_util
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 )
 
 func Check(err error) {
 	if err != nil {
+		fmt.Println("------")
+		fmt.Println(err.Error())
+		fmt.Println("------")
 		panic(err)
 	}
 }
