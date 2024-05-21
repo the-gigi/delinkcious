@@ -1,4 +1,7 @@
+# syntax=docker/dockerfile:1.3
 FROM python:3
+
+ARG ARCH
 
 RUN apt-get update -y
 RUN apt-get install -y vim \
@@ -6,10 +9,10 @@ RUN apt-get install -y vim \
                        apt-transport-https \
                        ca-certificates \
                        netcat-openbsd \
-                       redis \
-                       snap
+                       redis
 
-RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" \
+RUN KUBECTL_URL="https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${ARCH}/kubectl" \
+    && curl -LO $KUBECTL_URL \
     && chmod +x kubectl \
     && mv kubectl /usr/bin/kubectl
 
