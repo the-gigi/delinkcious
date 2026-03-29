@@ -1,6 +1,6 @@
 module github.com/the-gigi/delinkcious/svc/link_service
 
-go 1.17
+go 1.24.0
 
 require (
 	github.com/go-kit/kit v0.12.0
@@ -31,8 +31,8 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	go.uber.org/atomic v1.9.0 // indirect
-	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
