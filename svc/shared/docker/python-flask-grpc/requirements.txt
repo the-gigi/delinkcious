@@ -1,5 +1,5 @@
 requests-oauthlib==2.0.0
 Flask-OAuthlib==0.9.6
 Flask-RESTful==0.3.10
-grpcio==1.18.0
+grpcio==1.78.0
 grpcio-tools==1.78.0
