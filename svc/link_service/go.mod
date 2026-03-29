@@ -3,7 +3,7 @@ module github.com/the-gigi/delinkcious/svc/link_service
 go 1.24.0
 
 require (
-	github.com/go-kit/kit v0.12.0
+	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/prometheus/client_golang v1.11.1
@@ -22,7 +22,7 @@ require (
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/lib/pq v1.10.4 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
-	github.com/nats-io/nats.go v1.13.0 // indirect
+	github.com/nats-io/nats.go v1.15.0 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
