@@ -3,7 +3,7 @@ module github.com/the-gigi/delinkcious/svc/user_service
 go 1.17
 
 require (
-	github.com/go-kit/kit v0.12.0
+	github.com/go-kit/kit v0.13.0
 	github.com/gorilla/mux v1.8.0
 	github.com/the-gigi/delinkcious v0.0.0-20220103094143-701d7f6061e1
 )
