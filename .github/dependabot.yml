@@ -4,6 +4,22 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/svc/link_service"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/svc/news_service"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/svc/social_graph_service"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/svc/user_service"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
