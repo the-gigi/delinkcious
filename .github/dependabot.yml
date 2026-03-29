@@ -20,6 +20,14 @@ updates:
     directory: "/svc/user_service"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/svc/api_gateway_service"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/svc/shared/docker/python-flask-grpc"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
