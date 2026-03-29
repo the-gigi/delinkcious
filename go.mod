@@ -4,11 +4,11 @@ go 1.24.0
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/go-kit/kit v0.12.0
+	github.com/go-kit/kit v0.13.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang/protobuf v1.5.4
 	github.com/lib/pq v1.12.0
-	github.com/nats-io/nats.go v1.13.0
+	github.com/nats-io/nats.go v1.15.0
 	github.com/nuclio/nuclio-sdk-go v0.5.3
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0
