@@ -3,7 +3,7 @@ module github.com/the-gigi/delinkcious
 go 1.17
 
 require (
-	github.com/Masterminds/squirrel v1.5.2
+	github.com/Masterminds/squirrel v1.5.4
 	github.com/go-kit/kit v0.12.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang/protobuf v1.5.2
