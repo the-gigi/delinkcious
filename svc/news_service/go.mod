@@ -1,12 +1,12 @@
 module github.com/the-gigi/delinkcious/svc/news_service
 
-go 1.17
+go 1.24.0
 
 require (
 	github.com/go-kit/kit v0.13.0
 	github.com/golang/protobuf v1.5.4
 	github.com/the-gigi/delinkcious v0.0.0-20220103094143-701d7f6061e1
-	google.golang.org/grpc v1.43.0
+	google.golang.org/grpc v1.80.0
 )
 
 require (
@@ -17,10 +17,10 @@ require (
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
-	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/net v0.49.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	google.golang.org/genproto v0.0.0-20210917145530-b395a37504d4 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 )
