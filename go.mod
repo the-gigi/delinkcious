@@ -8,7 +8,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang/protobuf v1.5.4
 	github.com/lib/pq v1.12.3
-	github.com/nats-io/nats.go v1.50.0
+	github.com/nats-io/nats.go v1.51.0
 	github.com/nuclio/nuclio-sdk-go v0.5.3
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0
