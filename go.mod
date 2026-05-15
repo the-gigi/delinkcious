@@ -15,7 +15,7 @@ require (
 	github.com/pelletier/go-toml v1.9.5
 	github.com/prometheus/client_golang v1.11.1
 	golang.org/x/net v0.53.0
-	google.golang.org/grpc v1.80.0
+	google.golang.org/grpc v1.81.1
 	gopkg.in/yaml.v2 v2.4.0
 )
 
